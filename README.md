@@ -1,4 +1,4 @@
-# ZK Energy Trading in RISC Zero / Boundless
+# ZK Energy Trading in RISC Zero / Boundless ⚡️
 
 
 
