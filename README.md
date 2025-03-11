@@ -3,10 +3,18 @@
 
 ## Installation
 
+### Deploy the SCs
 - Deploy SCs
 ```bash
 sh ./contracts/scripts/runningScript_Deploy.sh
 ```
+
+### Running the Apps
+- Run the `./apps/src/main.rs`
+```bash
+sh ./apps/runningApp_main.sh
+```
+
 
 
 <br>
