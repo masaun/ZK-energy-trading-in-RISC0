@@ -1,7 +1,8 @@
 [profile.default]
 src = "contracts/src"
 out = "contracts/out"
-libs = ["lib", "contracts/src"]
+libs = ["lib"]                    # forge installed modules would be added here.
+#libs = ["lib", "contracts/src"]  # forge installed modules would be added here.
 script = "contracts/scripts"
 test = "contracts/test"
 ffi = true
