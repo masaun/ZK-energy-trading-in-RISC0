@@ -12,24 +12,67 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+use core::num;
 use std::io::Read;
 
-use alloy_primitives::U256;
-use alloy_sol_types::SolValue;
+use alloy_primitives::{ Uint, U256 };
+use alloy_sol_types::{ SolValue, Error, SolType };
 use risc0_zkvm::guest::env;
 
+#[derive(Debug)]
+struct ElectricityBillData {
+    seller_id: u32,
+    seller_physical_address: String,
+    seller_wallet_addresses: String,
+}
+
 fn main() {
-    // Read the input data for this application.
-    let mut input_bytes = Vec::<u8>::new();
-    env::stdin().read_to_end(&mut input_bytes).unwrap();
+    // Read the input data for this application (= Host).
+    let input_number: u64 = env::read();
+    let input_total_exact_amount_of_energy_available: u64 = env::read();
+    let input_current_time: u64 = env::read();
+    let input_monitored_time: u64 = env::read();
+    let input_monitored_merkle_root: String = env::read();
+    //let input_monitored_hash_path: Vec<String> = Vec::<String>::new();
+    let input_monitored_nullifier: bool = env::read();
+    //let mut input_number_bytes = Vec::<u8>::new();
+    //let mut input_total_exact_amount_of_energy_available_bytes = Vec::<u8>::new();
+    //let mut input_electricity_bill_data: ElectricityBillData = env::read();
+
+    //env::stdin().read_to_end(&mut input_number_bytes).unwrap();
+    //env::stdin().read_to_end(&mut input_total_exact_amount_of_energy_available_bytes).unwrap();
+    //env::stdin().read_to_end(&mut input_electricity_bill_data_bytes).unwrap();
+
     // Decode and parse the input
-    let number = <U256>::abi_decode(&input_bytes, true).unwrap();
+    let number = input_number;
+    //let number: Uint<256, 4> = <U256>::abi_decode(&input_number_bytes, true).unwrap();
+    let total_exact_amount_of_energy_available = input_total_exact_amount_of_energy_available;
+    //let total_exact_amount_of_energy_available = <U256>::abi_decode(&input_total_exact_amount_of_energy_available_bytes, true).unwrap();
+    let current_time = input_current_time;
+    let monitored_time = input_monitored_time;
+    let monitored_merkle_root = input_monitored_merkle_root;
+    //let monitored_hash_path = input_monitored_hash_path;
+    let monitored_nullifier = input_monitored_nullifier;
+
+    // Constants - Check if the total exact amount of energy available is equal to the required amount of energy available
+    //let required_amount_of_energy_available_bytes = U256::from(1000); // kwh - The required amount of energy available to be consumed by the seller (= consumer/household)
+    let required_amount_of_energy_available: u64 = 500;
+    //let required_amount_of_energy_available = <U256>::abi_decode(&required_amount_of_energy_available_bytes.abi_encode(), true).unwrap();
 
     // Run the computation.
-    // In this case, asserting that the provided number is even.
-    assert!(!number.bit(0), "number is not even");
+    assert!(number > 100, "number must be more than 0");
+    //assert!(!number.bit(0), "number is not even");
+    //assert!(monitored_time <= current_time, "A given monitored time must be less than the current time");
+    //assert!(&monitored_time >= &current_time - 3600, "A given monitored time must be greater than the current time - 1 hour (3600 seconds)");
+    assert!(total_exact_amount_of_energy_available >= required_amount_of_energy_available, "total exact amount of energy available must be greater than the required amount of energy available");
 
     // Commit the journal that will be received by the application contract.
     // Journal is encoded using Solidity ABI for easy decoding in the app contract.
-    env::commit_slice(number.abi_encode().as_slice());
+    env::commit(&number);
+    env::commit(&monitored_time);
+    env::commit(&monitored_merkle_root);
+    //env::commit(&monitored_hash_path);
+    env::commit(&monitored_nullifier);
+    //env::commit_slice(number.abi_encode().as_slice());
 }

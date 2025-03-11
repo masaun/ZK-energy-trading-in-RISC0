@@ -15,34 +15,90 @@
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
 use guests::IS_EVEN_ELF;
-use risc0_zkvm::{default_executor, ExecutorEnv};
+use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
 
 #[test]
 fn proves_even_number() {
-    let even_number = U256::from(1304);
+    let input_number: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
+    let input_total_exact_amount_of_energy_available: u64 = 1100;
+    let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
+    let input_monitored_time: u64 = 1740641630;
+    let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
+    //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
+    let input_monitored_nullifier: bool = true;
 
     let env = ExecutorEnv::builder()
-        .write_slice(&even_number.abi_encode())
+        .write(&input_number)
+        .unwrap()
+        .write(&input_total_exact_amount_of_energy_available)
+        .unwrap()
+        .write(&input_current_time)
+        .unwrap()
+        .write(&input_monitored_time)
+        .unwrap()
+        .write(&input_monitored_merkle_root)
+        .unwrap()
+        //.write(&input_monitored_hash_path)
+        //.unwrap()
+        .write(&input_monitored_nullifier)
+        .unwrap()
         .build()
         .unwrap();
 
-    // NOTE: Use the executor to run tests without proving.
-    let session_info = default_executor().execute(env, IS_EVEN_ELF).unwrap();
+    // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
+    let prover = default_prover();
+    let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
 
-    let x = U256::abi_decode(&session_info.journal.bytes, true).unwrap();
-    assert_eq!(x, even_number);
+    // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
+    //let prover_without_actual_proving = default_executor();
+    //let _journal = prover_without_actual_proving.execute(env, IS_EVEN_ELF).unwrap().journal;
+
+    //let x = U256::abi_decode(&_journal.bytes, true).unwrap();
+    //assert_eq!(x, even_number);
+
+    // Report the product
+    //println!("I know the factors of {:?}, and I can prove it!", _journal);
+    println!("I know the factors of {:?}, and I can prove it!", _receipt);
 }
 
 #[test]
-#[should_panic(expected = "number is not even")]
+#[should_panic(expected = "number must be more than 0")]
+//#[should_panic(expected = "number is not even")]
 fn rejects_odd_number() {
-    let odd_number = U256::from(75);
+    let input_odd_number: u64 = 75; // @dev - Input value to be loaded into the ZK circuit.
+    //let odd_number = U256::from(75);
+    let input_total_exact_amount_of_energy_available: u64 = 1100;
+    let input_number: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
+    let input_total_exact_amount_of_energy_available: u64 = 1100;
+    let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
+    let input_monitored_time: u64 = 1740641630;
+    let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
+    //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
+    let input_monitored_nullifier: bool = true;
 
     let env = ExecutorEnv::builder()
-        .write_slice(&odd_number.abi_encode())
+        .write(&input_odd_number)
+        .unwrap()
+        .write(&input_total_exact_amount_of_energy_available)
+        .unwrap()
+        .write(&input_current_time)
+        .unwrap()
+        .write(&input_monitored_time)
+        .unwrap()
+        .write(&input_monitored_merkle_root)
+        .unwrap()
+        //.write(&input_monitored_hash_path)
+        //.unwrap()
+        .write(&input_monitored_nullifier)
+        .unwrap()
         .build()
         .unwrap();
 
-    // NOTE: Use the executor to run tests without proving.
-    default_executor().execute(env, IS_EVEN_ELF).unwrap();
+    // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
+    let prover = default_prover();
+    let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
+
+    // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
+    //let prover_without_actual_proving = default_executor();
+    //let _journal = prover_without_actual_proving.execute(env, IS_EVEN_ELF).unwrap().journal;
 }
