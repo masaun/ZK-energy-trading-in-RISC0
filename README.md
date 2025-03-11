@@ -1,6 +1,13 @@
 # ZK Energy Trading in RISC Zero / Boundless ⚡️
 
 
+## Installation
+
+- Deploy SCs
+```bash
+sh ./contracts/scripts/runningScript_Deploy.sh
+```
+
 
 <br>
 
