@@ -30,4 +30,7 @@ contracts/test/Elf.sol
 .env
 
 # Dependencies
+lib/forge-std/*
+lib/openzeppelin-contracts/*
+lib/risc0-ethereum/*
 Cargo.lock
