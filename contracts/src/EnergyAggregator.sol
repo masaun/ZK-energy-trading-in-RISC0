@@ -33,7 +33,7 @@ contract EnergyAggregator {
     }
 
     /// @notice Returns the number stored.
-    function getEnergyData() public view returns (uint256) {
+    function getEnergyAmountToBeSold() public view returns (uint256) {
         return energyAmountToBeSold;
     }
 
