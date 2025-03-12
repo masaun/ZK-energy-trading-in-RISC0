@@ -28,7 +28,7 @@ use boundless_market::{
     storage::StorageProviderConfig,
 };
 use clap::Parser;
-use guests::{IS_EVEN_ELF, IS_EVEN_ID};
+use guests::{IS_EVEN_ELF, IS_EVEN_ID}; // "ELF" and "image ID"
 use risc0_zkvm::{default_executor, sha::Digestible};
 use url::Url;
 
@@ -49,6 +49,7 @@ struct Args {
     /// The number to publish to the EvenNumber contract.
     #[clap(short, long)]
     number: u32,           // @dev - Used in CLI as an option / The number to publish to the EvenNumber contract.
+
     /// URL of the Ethereum RPC endpoint.
     #[clap(short, long, env)]
     rpc_url: Url,
@@ -104,13 +105,39 @@ async fn main() -> Result<()> {
         boundless_client.storage_provider.is_some(),
         "a storage provider is required to upload the zkVM guest ELF"
     );
-    let image_url = boundless_client.upload_image(IS_EVEN_ELF).await?;
-    tracing::info!("Uploaded image to {}", image_url);
+
+    print!("\n Uploading image to storage provider..............................\n");
+
+    let image_url = boundless_client.upload_image(IS_EVEN_ELF).await?; // Error: Failed to upload image
+    tracing::info!("Uploaded image to {}\n", image_url);
 
     // Encode the input and upload it to the storage provider.
-    tracing::info!("Number to publish: {}", args.number);
-    let input_builder = InputBuilder::new().write_slice(&U256::from(args.number).abi_encode());
-    tracing::info!("input builder: {:?}", input_builder);
+    tracing::info!("Number to publish: {}\n", args.number); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    
+    let input_number: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
+    let input_total_exact_amount_of_energy_available: u64 = 1100;
+    let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
+    let input_monitored_time: u64 = 1740641630;
+    let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
+    //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
+    let input_monitored_nullifier: bool = true;
+    tracing::info!("'input_number' to publish: {}\n", input_number);
+    tracing::info!("'input_total_exact_amount_of_energy_available' to publish: {}\n", input_total_exact_amount_of_energy_available);
+    tracing::info!("'input_current_time' to publish: {}\n", input_current_time);
+    tracing::info!("'input_monitored_time' to publish: {}\n", input_monitored_time);
+    tracing::info!("'input_monitored_merkle_root' to publish: {}\n", input_monitored_merkle_root);
+    tracing::info!("'input_monitored_nullifier' to publish: {}\n", input_monitored_nullifier);
+
+    //let input_builder = InputBuilder::new().write_slice(&U256::from(args.number).abi_encode());
+    let input_builder = InputBuilder::new().write(&input_number).unwrap()
+                                                         .write(&input_total_exact_amount_of_energy_available).unwrap()
+                                                         .write(&input_current_time).unwrap()
+                                                         .write(&input_monitored_time).unwrap()
+                                                         .write(&input_monitored_merkle_root).unwrap()
+                                                         //.write(&input_monitored_hash_path).unwrap()
+                                                         .write(&input_monitored_nullifier).unwrap();
+
+    tracing::info!("input builder: {:?}\n", input_builder);
 
     let guest_env = input_builder.clone().build_env()?;
     let guest_env_bytes = guest_env.encode()?;
@@ -145,10 +172,10 @@ async fn main() -> Result<()> {
     // If the input exceeds 2 kB, upload the input and provide its URL instead, as a rule of thumb.
     let request_input = if guest_env_bytes.len() > 2 << 10 {
         let input_url = boundless_client.upload_input(&guest_env_bytes).await?;
-        tracing::info!("Uploaded input to {}", input_url);
+        tracing::info!("Uploaded input to {} \n", input_url);
         Input::url(input_url)
     } else {
-        tracing::info!("Sending input inline with request");
+        tracing::info!("Sending input inline with request \n");
         Input::inline(guest_env_bytes.clone())
     };
 
