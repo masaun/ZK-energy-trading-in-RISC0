@@ -14,7 +14,8 @@
 
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
-use guests::IS_EVEN_ELF;
+use guests::IS_SMART_METER_ELF;
+//use guests::IS_EVEN_ELF;
 use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
 
 #[test]
@@ -47,7 +48,8 @@ fn proves_even_number() {
 
     // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
     let prover = default_prover();
-    let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
+    let _receipt = prover.prove(env, IS_SMART_METER_ELF).unwrap().receipt;
+    //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
 
     // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
     //let prover_without_actual_proving = default_executor();
@@ -96,7 +98,8 @@ fn rejects_odd_number() {
 
     // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
     let prover = default_prover();
-    let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
+    let _receipt = prover.prove(env, IS_SMART_METER_ELF).unwrap().receipt;
+    //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
 
     // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
     //let prover_without_actual_proving = default_executor();
