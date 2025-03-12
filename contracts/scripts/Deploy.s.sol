@@ -14,9 +14,10 @@
 
 pragma solidity ^0.8.20;
 
-import {Script, console2} from "forge-std/Script.sol";
-import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
-import {EvenNumber} from "../src/EvenNumber.sol";
+import { Script, console2 } from "forge-std/Script.sol";
+import { IRiscZeroVerifier } from "risc0/IRiscZeroVerifier.sol";
+import { EnergyAggregator } from "../src/EnergyAggregator.sol";
+//import { EvenNumber } from "../src/EvenNumber.sol";
 
 contract Deploy is Script {
     function run() external {
@@ -26,9 +27,9 @@ contract Deploy is Script {
         vm.startBroadcast(key);
 
         IRiscZeroVerifier verifier = IRiscZeroVerifier(verifierAddress);
-        EvenNumber evenNumber = new EvenNumber(verifier);
-        address evenNumberAddress = address(evenNumber);
-        console2.log("Deployed EvenNumber to", evenNumberAddress);
+        EnergyAggregator energyAggregator = new EnergyAggregator(verifier);
+        address energyAggregatorAddress = address(energyAggregator);
+        console2.log("Deployed EnergyAggregator to", energyAggregatorAddress);
 
         vm.stopBroadcast();
     }
