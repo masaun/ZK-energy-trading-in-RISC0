@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::time::Duration;
+use std::{ops::Add, time::Duration};
 
-use crate::even_number::IEvenNumber::IEvenNumberInstance;
+use crate::energy_aggregator::IEnergyAggregator::IEnergyAggregatorInstance;
+//use crate::even_number::IEvenNumber::IEvenNumberInstance;
 use alloy::{
     primitives::{utils::parse_ether, Address, U256},
     signers::local::PrivateKeySigner,
@@ -36,10 +37,11 @@ use url::Url;
 /// Timeout for the transaction to be confirmed.
 pub const TX_TIMEOUT: Duration = Duration::from_secs(30);
 
-mod even_number {
+mod energy_aggregator {
     alloy::sol!(
         #![sol(rpc, all_derives)]
-        "../contracts/src/IEvenNumber.sol"
+        "../contracts/src/IEnergyAggregator.sol"
+        //"../contracts/src/IEvenNumber.sol"
     );
 }
 
@@ -49,7 +51,8 @@ mod even_number {
 struct Args {
     /// The number to publish to the EvenNumber contract.
     #[clap(short, long)]
-    number: u32,           // @dev - Used in CLI as an option / The number to publish to the EvenNumber contract.
+    amount_of_energy_to_be_sold: u64, // @dev - Used in CLI as an option / The energyAmountToBeSold to publish to the EnergyAggregator contract.
+    //number: u32,           // @dev - Used in CLI as an option / The number to publish to the EvenNumber contract.
 
     /// URL of the Ethereum RPC endpoint.
     #[clap(short, long, env)]
@@ -66,9 +69,12 @@ struct Args {
     /// Storage provider to use
     #[clap(flatten)]
     storage_config: Option<StorageProviderConfig>,
+
     /// Address of the EvenNumber contract.
     #[clap(short, long, env)]
-    even_number_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
+    energy_aggregator_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
+    //even_number_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
+    
     /// Address of the RiscZeroSetVerifier contract.
     #[clap(short, long, env)]
     set_verifier_address: Address,
@@ -114,16 +120,17 @@ async fn main() -> Result<()> {
     tracing::info!("Uploaded image to {}\n", image_url);
 
     // Encode the input and upload it to the storage provider.
-    tracing::info!("Number to publish: {}\n", args.number); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    tracing::info!("amount_of_energy_to_be_sold to publish: {}\n", args.amount_of_energy_to_be_sold); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    //tracing::info!("Number to publish: {}\n", args.number); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
     
-    let input_number: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
+    let input_amount_of_energy_to_be_sold: u64 = 800; // @dev - Input value to be loaded into the ZK circuit.
     let input_total_exact_amount_of_energy_available: u64 = 1100;
     let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
     let input_monitored_time: u64 = 1740641630;
     let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
     //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
     let input_monitored_nullifier: bool = true;
-    tracing::info!("'input_number' to publish: {}\n", input_number);
+    tracing::info!("'input_amount_of_energy_to_be_sold' to publish: {}\n", input_amount_of_energy_to_be_sold);
     tracing::info!("'input_total_exact_amount_of_energy_available' to publish: {}\n", input_total_exact_amount_of_energy_available);
     tracing::info!("'input_current_time' to publish: {}\n", input_current_time);
     tracing::info!("'input_monitored_time' to publish: {}\n", input_monitored_time);
@@ -131,7 +138,7 @@ async fn main() -> Result<()> {
     tracing::info!("'input_monitored_nullifier' to publish: {}\n", input_monitored_nullifier);
 
     //let input_builder = InputBuilder::new().write_slice(&U256::from(args.number).abi_encode());
-    let input_builder = InputBuilder::new().write(&input_number).unwrap()
+    let input_builder = InputBuilder::new().write(&input_amount_of_energy_to_be_sold).unwrap()
                                                          .write(&input_total_exact_amount_of_energy_available).unwrap()
                                                          .write(&input_current_time).unwrap()
                                                          .write(&input_monitored_time).unwrap()
@@ -221,12 +228,12 @@ async fn main() -> Result<()> {
 
     // Interact with the EvenNumber contract by calling the set function with our number and
     // the seal (i.e. proof) returned by the market.
-    let even_number = IEvenNumberInstance::new(
-        args.even_number_address,
+    let energy_aggregator = IEnergyAggregatorInstance::new(
+        args.energy_aggregator_address,
         boundless_client.provider().clone(), // @dev - IRiscZeroVerifier contract instance
     );
-    let set_number = even_number
-        .set(U256::from(args.number), seal)  // @dev - Call the EvenNumber#set() function
+    let set_number = energy_aggregator
+        .submitEnergyAmountToBeSold(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EvenNumber#set() function
         .from(boundless_client.caller());
 
     tracing::info!("Broadcasting tx calling EvenNumber set function");
@@ -240,16 +247,16 @@ async fn main() -> Result<()> {
     tracing::info!("Tx {:?} confirmed", tx_hash);
 
     // We query the value stored at the EvenNumber address to check it was set correctly
-    let number = even_number
-        .get()
+    let amount_of_energy_to_be_sold = energy_aggregator
+        .getEnergyAmountToBeSold()
         .call()
         .await
         .context("failed to get number from contract")?
         ._0;
     tracing::info!(
-        "Number for address: {:?} is set to {:?}",
+        "amount_of_energy_to_be_sold for address: {:?} is set to {:?}",
         boundless_client.caller(),
-        number
+        amount_of_energy_to_be_sold
     );
 
     Ok(())

@@ -29,7 +29,7 @@ struct ElectricityBillData {
 
 fn main() {
     // Read the input data for this application (= Host).
-    let input_number: u64 = env::read();
+    let input_amount_of_energy_to_be_sold: u64 = env::read();
     let input_total_exact_amount_of_energy_available: u64 = env::read();
     let input_current_time: u64 = env::read();
     let input_monitored_time: u64 = env::read();
@@ -45,7 +45,7 @@ fn main() {
     //env::stdin().read_to_end(&mut input_electricity_bill_data_bytes).unwrap();
 
     // Decode and parse the input
-    let number = input_number;
+    let amount_of_energy_to_be_sold = input_amount_of_energy_to_be_sold;
     //let number: Uint<256, 4> = <U256>::abi_decode(&input_number_bytes, true).unwrap();
     let total_exact_amount_of_energy_available = input_total_exact_amount_of_energy_available;
     //let total_exact_amount_of_energy_available = <U256>::abi_decode(&input_total_exact_amount_of_energy_available_bytes, true).unwrap();
@@ -55,21 +55,15 @@ fn main() {
     //let monitored_hash_path = input_monitored_hash_path;
     let monitored_nullifier = input_monitored_nullifier;
 
-    // Constants - Check if the total exact amount of energy available is equal to the required amount of energy available
-    //let required_amount_of_energy_available_bytes = U256::from(1000); // kwh - The required amount of energy available to be consumed by the seller (= consumer/household)
-    let required_amount_of_energy_available: u64 = 500;
-    //let required_amount_of_energy_available = <U256>::abi_decode(&required_amount_of_energy_available_bytes.abi_encode(), true).unwrap();
-
     // Run the computation.
-    assert!(number > 100, "number must be more than 0");
+    assert!(total_exact_amount_of_energy_available >= amount_of_energy_to_be_sold, "total exact amount of energy available must be greater than the amount of energy to be sold");
     //assert!(!number.bit(0), "number is not even");
     //assert!(monitored_time <= current_time, "A given monitored time must be less than the current time");
     //assert!(&monitored_time >= &current_time - 3600, "A given monitored time must be greater than the current time - 1 hour (3600 seconds)");
-    assert!(total_exact_amount_of_energy_available >= required_amount_of_energy_available, "total exact amount of energy available must be greater than the required amount of energy available");
 
     // Commit the journal that will be received by the application contract.
     // Journal is encoded using Solidity ABI for easy decoding in the app contract.
-    env::commit(&number);
+    env::commit(&amount_of_energy_to_be_sold);
     env::commit(&monitored_time);
     env::commit(&monitored_merkle_root);
     //env::commit(&monitored_hash_path);
