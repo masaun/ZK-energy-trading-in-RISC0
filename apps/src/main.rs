@@ -48,7 +48,7 @@ mod even_number {
 struct Args {
     /// The number to publish to the EvenNumber contract.
     #[clap(short, long)]
-    number: u32,
+    number: u32,           // @dev - Used in CLI as an option / The number to publish to the EvenNumber contract.
     /// URL of the Ethereum RPC endpoint.
     #[clap(short, long, env)]
     rpc_url: Url,
@@ -66,7 +66,7 @@ struct Args {
     storage_config: Option<StorageProviderConfig>,
     /// Address of the EvenNumber contract.
     #[clap(short, long, env)]
-    even_number_address: Address,
+    even_number_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
     /// Address of the RiscZeroSetVerifier contract.
     #[clap(short, long, env)]
     set_verifier_address: Address,
@@ -193,10 +193,10 @@ async fn main() -> Result<()> {
     // the seal (i.e. proof) returned by the market.
     let even_number = IEvenNumberInstance::new(
         args.even_number_address,
-        boundless_client.provider().clone(),
+        boundless_client.provider().clone(), // @dev - IRiscZeroVerifier contract instance
     );
     let set_number = even_number
-        .set(U256::from(args.number), seal)
+        .set(U256::from(args.number), seal)  // @dev - Call the EvenNumber#set() function
         .from(boundless_client.caller());
 
     tracing::info!("Broadcasting tx calling EvenNumber set function");
