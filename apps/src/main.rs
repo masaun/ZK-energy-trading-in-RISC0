@@ -28,7 +28,8 @@ use boundless_market::{
     storage::StorageProviderConfig,
 };
 use clap::Parser;
-use guests::{IS_EVEN_ELF, IS_EVEN_ID}; // "ELF" and "image ID"
+use guests::{IS_SMART_METER_ELF, IS_SMART_METER_ID}; // "ELF" and "image ID" (ImageID.sol#IS_SMART_METER_ID)
+//use guests::{IS_EVEN_ELF, IS_EVEN_ID}; // "ELF" and "image ID" (ImageID.sol#IS_EVEN_ID)
 use risc0_zkvm::{default_executor, sha::Digestible};
 use url::Url;
 
@@ -108,7 +109,8 @@ async fn main() -> Result<()> {
 
     print!("\n Uploading image to storage provider..............................\n");
 
-    let image_url = boundless_client.upload_image(IS_EVEN_ELF).await?; // Error: Failed to upload image
+    let image_url = boundless_client.upload_image(IS_SMART_METER_ELF).await?; // Error: Failed to upload image
+    //let image_url = boundless_client.upload_image(IS_EVEN_ELF).await?; // Error: Failed to upload image
     tracing::info!("Uploaded image to {}\n", image_url);
 
     // Encode the input and upload it to the storage provider.
@@ -147,7 +149,8 @@ async fn main() -> Result<()> {
     // It can also be useful to ensure the guest can be executed correctly and we do not send into
     // the market unprovable proving requests. If you have a different mechanism to get the expected
     // journal and set a price, you can skip this step.
-    let session_info = default_executor().execute(guest_env.try_into().unwrap(), IS_EVEN_ELF)?;
+    let session_info = default_executor().execute(guest_env.try_into().unwrap(), IS_SMART_METER_ELF)?;
+    //let session_info = default_executor().execute(guest_env.try_into().unwrap(), IS_EVEN_ELF)?;
     let mcycles_count = session_info
         .segments
         .iter()
@@ -183,7 +186,7 @@ async fn main() -> Result<()> {
         .with_image_url(image_url.to_string())
         .with_input(request_input)
         .with_requirements(Requirements::new(
-            IS_EVEN_ID,
+            IS_SMART_METER_ID,
             Predicate::digest_match(journal.digest()),
         ))
         .with_offer(

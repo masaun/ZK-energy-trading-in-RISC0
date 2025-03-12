@@ -33,7 +33,8 @@ fn main() {
 
     // Generate Rust source files for the methods crate.
     let guests = embed_methods_with_options(HashMap::from([(
-        "is-even",
+        "is-smart-meter",
+        //"is-even",
         GuestOptions {
             features: Vec::new(),
             use_docker,
