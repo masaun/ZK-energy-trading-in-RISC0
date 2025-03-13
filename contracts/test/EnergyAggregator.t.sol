@@ -67,7 +67,12 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         //uint256 monitored_hash_path,
         bool monitoredNullifier = true;
 
+        /// @dev - Generate (= Prove) a new mock proof.
         RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
+        //console2.log("Receipt ID:", receipt.id);
+        console2.logBytes(receipt.seal); // [Log]: 0x000000002cfcebe8cc0eeb0dbd0d347d08fb5ee468cd9747c1920d0cb81222b1e8576962
+
+        /// @dev - Verify the mock proof-generated via the function below.
         vm.expectRevert(VerificationFailed.selector);
         energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
     }

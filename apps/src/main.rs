@@ -123,7 +123,8 @@ async fn main() -> Result<()> {
     tracing::info!("amount_of_energy_to_be_sold to publish: {}\n", args.amount_of_energy_to_be_sold); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
     //tracing::info!("Number to publish: {}\n", args.number); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
     
-    let input_amount_of_energy_to_be_sold: u64 = 800; // @dev - Input value to be loaded into the ZK circuit.
+    let input_amount_of_energy_to_be_sold: u64 = 800;      // @dev - Input value to be loaded into the ZK circuit.
+    //let input_amount_of_energy_to_be_sold: u64 = 10000;  // @dev - (Wrong) Input value --> [Result]: Successful to reverted in ZK circuit /w the error mssage of "total exact amount of energy available must be greater than the amount of energy to be sold".
     let input_total_exact_amount_of_energy_available: u64 = 1100;
     let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
     let input_monitored_time: u64 = 1740641630;
