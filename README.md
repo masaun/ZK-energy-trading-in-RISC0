@@ -3,6 +3,16 @@
 
 ## Installation
 
+
+## Running the test of the guest program
+
+- Run the test of the "smart-meter" guest program
+```bash
+sh guests/tests/runningGuestProgram_smart-meter.sh
+```
+
+<br>
+
 ### Deploy the SCs
 - Deploy SCs
 ```bash

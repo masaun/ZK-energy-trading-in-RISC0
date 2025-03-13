@@ -17,10 +17,11 @@ use alloy_sol_types::SolValue;
 use guests::IS_SMART_METER_ELF;
 //use guests::IS_EVEN_ELF;
 use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
+use risc0_ethereum_contracts::encode_seal;
 
 #[test]
 fn proves_available_electricity_amount_from_smart_meter() {
-    let input_number: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
+    let input_amount_of_energy_to_be_sold: u64 = 800; // @dev - Input value to be loaded into the ZK circuit.
     let input_total_exact_amount_of_energy_available: u64 = 1100;
     let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
     let input_monitored_time: u64 = 1740641630;
@@ -29,7 +30,7 @@ fn proves_available_electricity_amount_from_smart_meter() {
     let input_monitored_nullifier: bool = true;
 
     let env = ExecutorEnv::builder()
-        .write(&input_number)
+        .write(&input_amount_of_energy_to_be_sold)
         .unwrap()
         .write(&input_total_exact_amount_of_energy_available)
         .unwrap()
@@ -50,26 +51,24 @@ fn proves_available_electricity_amount_from_smart_meter() {
     let prover = default_prover();
     let _receipt = prover.prove(env, IS_SMART_METER_ELF).unwrap().receipt;
     //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
+    println!("I know the factors of {:?}, and I can prove it!\n", _receipt);
 
-    // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
-    //let prover_without_actual_proving = default_executor();
-    //let _journal = prover_without_actual_proving.execute(env, IS_EVEN_ELF).unwrap().journal;
+    // Encode the seal (= Proof) with the selector.
+    let seal = encode_seal(&_receipt);
+    println!("seal: {:?}\n", _receipt);
 
-    //let x = U256::abi_decode(&_journal.bytes, true).unwrap();
-    //assert_eq!(x, even_number);
-
-    // Report the product
-    //println!("I know the factors of {:?}, and I can prove it!", _journal);
-    println!("I know the factors of {:?}, and I can prove it!", _receipt);
+    // Extract the journal from the receipt.
+    let journal = _receipt.journal.bytes.clone();
+    println!("journal: {:?}\n", journal);
 }
 
 #[test]
-#[should_panic(expected = "total exact amount of energy available must be greater than the required amount of energy available")] // @dev - This expected-error message should correspond to the panice message in the constraint in the ZK circuit. 
+#[should_panic(expected = "total exact amount of energy available must be greater than the amount of energy to be sold")] // @dev - This expected-error message should correspond to the panice message in the constraint in the ZK circuit. 
 //#[should_panic(expected = "number must be more than 0")]
 fn rejects_wrong_available_electricity_amount_from_smart_meter() {
     //let input_odd_number: u64 = 75; // @dev - Input value to be loaded into the ZK circuit.
     //let odd_number = U256::from(75);
-    let input_number: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
+    let input_amount_of_energy_to_be_sold: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
     let wrong_input_total_exact_amount_of_energy_available: u64 = 300;
     let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
     let input_monitored_time: u64 = 1740641630;
@@ -78,7 +77,7 @@ fn rejects_wrong_available_electricity_amount_from_smart_meter() {
     let input_monitored_nullifier: bool = true;
 
     let env = ExecutorEnv::builder()
-        .write(&input_number)
+        .write(&input_amount_of_energy_to_be_sold)
         .unwrap()
         .write(&wrong_input_total_exact_amount_of_energy_available) // @dev - This is the fake input value.
         .unwrap()
