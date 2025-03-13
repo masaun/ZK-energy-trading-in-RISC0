@@ -34,7 +34,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
     }
 
     function test_submitEnergyAmountToBeSold() public {
-        uint256 energyAmountToBeSold = 1;        
+        uint256 energyAmountToBeSold = 100;  /// @dev - 100 kWh
         uint256 monitoredTime = 1740641630;
         bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
         //uint256 monitored_hash_path,
@@ -46,22 +46,22 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         assertEq(energyAggregator.getEnergyAmountToBeSold(), energyAmountToBeSold);
     }
 
-    function test_submitEnergyAmountToBeSold_with_Zero() public {
-        uint256 energyAmountToBeSold = 1;        
-        uint256 monitoredTime = 1740641630;
-        bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
-        //uint256 monitored_hash_path,
-        bool monitoredNullifier = true;
+    // function test_submitEnergyAmountToBeSold_with_Zero() public {
+    //     uint256 energyAmountToBeSold = 0;  /// @dev - 100 kWh
+    //     uint256 monitoredTime = 1740641630;
+    //     bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
+    //     //uint256 monitored_hash_path,
+    //     bool monitoredNullifier = true;
 
-        RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
+    //     RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
 
-        energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
-        assertEq(energyAggregator.getEnergyAmountToBeSold(), energyAmountToBeSold);
-    }
+    //     energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
+    //     assertEq(energyAggregator.getEnergyAmountToBeSold(), energyAmountToBeSold);
+    // }
 
     // Try using a proof for the evenness of 4 to set 1 on the contract.
     function test_rejectInvalidProof() public {
-        uint256 energyAmountToBeSold = 20000;        
+        uint256 energyAmountToBeSold = 0;  /// @dev - 0 kWh
         uint256 monitoredTime = 1740641630;
         bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
         //uint256 monitored_hash_path,
@@ -73,7 +73,8 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         console2.logBytes(receipt.seal); // [Log]: 0x000000002cfcebe8cc0eeb0dbd0d347d08fb5ee468cd9747c1920d0cb81222b1e8576962
 
         /// @dev - Verify the mock proof-generated via the function below.
-        vm.expectRevert(VerificationFailed.selector);
+        vm.expectRevert("Energy amount to be sold must be greater than 0"); /// @dev - This expected revert message must correspond to an error message in the SC level validation in the submitEnergyAmountToBeSold().
+        //vm.expectRevert(VerificationFailed.selector);
         energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
     }
 }

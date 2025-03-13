@@ -33,6 +33,9 @@ contract EnergyAggregator {
         bool _monitoredNullifier,
         bytes calldata seal
     ) public { /// @dev - Submitted by a Producer.
+        // @dev - Validation in the smart contract level
+        require(_energyAmountToBeSold > 0, "Energy amount to be sold must be greater than 0");
+
         // Construct the expected journal data. Verify will fail if journal does not match.
         bytes memory journal = abi.encode(_energyAmountToBeSold, _monitoredTime, _monitoredMerkleRoot, _monitoredNullifier);
         verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
