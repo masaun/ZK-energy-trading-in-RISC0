@@ -7,6 +7,7 @@ edition = "2021"
 alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
 risc0-zkvm = { workspace = true, features = ["client"] }
+risc0-ethereum-contracts = { workspace = true }
 
 [build-dependencies]
 risc0-build = { workspace = true }

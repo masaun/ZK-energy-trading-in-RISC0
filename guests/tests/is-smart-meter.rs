@@ -17,6 +17,7 @@ use alloy_sol_types::SolValue;
 use guests::IS_SMART_METER_ELF;
 //use guests::IS_EVEN_ELF;
 use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
+use risc0_ethereum_contracts::encode_seal;
 
 #[test]
 fn proves_available_electricity_amount_from_smart_meter() {
@@ -50,17 +51,15 @@ fn proves_available_electricity_amount_from_smart_meter() {
     let prover = default_prover();
     let _receipt = prover.prove(env, IS_SMART_METER_ELF).unwrap().receipt;
     //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
+    println!("I know the factors of {:?}, and I can prove it!\n", _receipt);
 
-    // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
-    //let prover_without_actual_proving = default_executor();
-    //let _journal = prover_without_actual_proving.execute(env, IS_EVEN_ELF).unwrap().journal;
+    // Encode the seal with the selector.
+    let seal = encode_seal(&_receipt);
+    println!("seal: {:?}\n", _receipt);
 
-    //let x = U256::abi_decode(&_journal.bytes, true).unwrap();
-    //assert_eq!(x, even_number);
-
-    // Report the product
-    //println!("I know the factors of {:?}, and I can prove it!", _journal);
-    println!("I know the factors of {:?}, and I can prove it!", _receipt);
+    // Extract the journal from the receipt.
+    let journal = _receipt.journal.bytes.clone();
+    println!("journal: {:?}\n", journal);
 }
 
 #[test]
