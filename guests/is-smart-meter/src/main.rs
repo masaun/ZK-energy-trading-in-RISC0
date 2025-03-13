@@ -61,7 +61,7 @@ fn main() {
     //assert!(monitored_time <= current_time, "A given monitored time must be less than the current time");
     //assert!(&monitored_time >= &current_time - 3600, "A given monitored time must be greater than the current time - 1 hour (3600 seconds)");
 
-    // Commit the journal that will be received by the application contract.
+    // Commit the "journal" that will be received by the application contract.
     // Journal is encoded using Solidity ABI for easy decoding in the app contract.
     env::commit(&amount_of_energy_to_be_sold);
     env::commit(&monitored_time);

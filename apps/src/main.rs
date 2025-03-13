@@ -232,12 +232,12 @@ async fn main() -> Result<()> {
         args.energy_aggregator_address,
         boundless_client.provider().clone(), // @dev - IRiscZeroVerifier contract instance
     );
-    let set_number = energy_aggregator
-        .submitEnergyAmountToBeSold(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EvenNumber#set() function
+    let tx_of_submitEnergyAmountToBeSold = energy_aggregator
+        .submitEnergyAmountToBeSold(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EnergyAggregator#submitEnergyAmountToBeSold() function
         .from(boundless_client.caller());
 
     tracing::info!("Broadcasting tx calling EvenNumber set function");
-    let pending_tx = set_number.send().await.context("failed to broadcast tx")?;
+    let pending_tx = tx_of_submitEnergyAmountToBeSold.send().await.context("failed to broadcast tx")?;
     tracing::info!("Sent tx {}", pending_tx.tx_hash());
     let tx_hash = pending_tx
         .with_timeout(Some(TX_TIMEOUT))
@@ -248,7 +248,7 @@ async fn main() -> Result<()> {
 
     // We query the value stored at the EvenNumber address to check it was set correctly
     let amount_of_energy_to_be_sold = energy_aggregator
-        .getEnergyAmountToBeSold()
+        .getEnergyAmountToBeSold() // @dev - Call the EnergyAggregator#getEnergyAmountToBeSold() function
         .call()
         .await
         .context("failed to get number from contract")?

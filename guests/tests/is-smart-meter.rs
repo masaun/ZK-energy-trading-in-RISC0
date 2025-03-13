@@ -53,7 +53,7 @@ fn proves_available_electricity_amount_from_smart_meter() {
     //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
     println!("I know the factors of {:?}, and I can prove it!\n", _receipt);
 
-    // Encode the seal with the selector.
+    // Encode the seal (= Proof) with the selector.
     let seal = encode_seal(&_receipt);
     println!("seal: {:?}\n", _receipt);
 

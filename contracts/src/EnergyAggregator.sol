@@ -25,9 +25,16 @@ contract EnergyAggregator {
     }
 
     /// @notice Set the even number stored on the contract. Requires a RISC Zero proof that the number is even.
-    function submitEnergyAmountToBeSold(uint256 _energyAmountToBeSold, bytes calldata seal) public { /// @dev - Submitted by a Producer.
+    function submitEnergyAmountToBeSold(
+        uint256 _energyAmountToBeSold, 
+        uint256 _monitored_time,
+        bytes32 _monitored_merkle_root,
+        //uint256 _monitored_hash_path,
+        bool _monitored_nullifier,
+        bytes calldata seal
+    ) public { /// @dev - Submitted by a Producer.
         // Construct the expected journal data. Verify will fail if journal does not match.
-        bytes memory journal = abi.encode(_energyAmountToBeSold);
+        bytes memory journal = abi.encode(_energyAmountToBeSold, _monitored_time, _monitored_merkle_root, _monitored_nullifier);
         verifier.verify(seal, imageId, sha256(journal));
         energyAmountToBeSold = _energyAmountToBeSold;
     }
