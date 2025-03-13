@@ -18,17 +18,21 @@ import { console2 } from "forge-std/console2.sol";
 import { Test } from "forge-std/Test.sol";
 import { RiscZeroCheats } from "risc0/test/RiscZeroCheats.sol";
 import { Receipt as RiscZeroReceipt } from "risc0/IRiscZeroVerifier.sol";
-import { RiscZeroMockVerifier } from "risc0/test/RiscZeroMockVerifier.sol";
+//import { IRiscZeroVerifier } from "risc0/IRiscZeroVerifier.sol";
+import { RiscZeroMockVerifier } from "risc0/test/RiscZeroMockVerifier.sol"; /// @dev - 'Prover' contract for testing.
 import { VerificationFailed } from "risc0/IRiscZeroVerifier.sol";
 import { EnergyAggregator } from "../src/EnergyAggregator.sol";
 import { ImageID } from "../src/ImageID.sol";
 
 contract EnergyAggregatorTest is RiscZeroCheats, Test {
     EnergyAggregator public energyAggregator;
+    //IRiscZeroVerifier public verifier;
     RiscZeroMockVerifier public verifier;
 
     function setUp() public {
-        verifier = new RiscZeroMockVerifier(0);
+        //address RISCZERO_VERIFIER = vm.envAddress("VERIFIER_ROUTER_ADDRESS"); /// @dev - Deployed-address of the 'RiscZeroVerifierRouter.sol' contract on Ethereum Sepolia.  
+        //verifier = IRiscZeroVerifier(RISCZERO_VERIFIER);
+        verifier = new RiscZeroMockVerifier(0); /// @dev - "Mock" Verifier (which is used for "proving" in this test)
         energyAggregator = new EnergyAggregator(verifier);
         assertEq(energyAggregator.getEnergyAmountToBeSold(), 0);
     }
