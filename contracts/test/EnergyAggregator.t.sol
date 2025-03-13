@@ -61,7 +61,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
 
     // Try using a proof for the evenness of 4 to set 1 on the contract.
     function test_rejectInvalidProof() public {
-        uint256 energyAmountToBeSold = 1;        
+        uint256 energyAmountToBeSold = 20000;        
         uint256 monitoredTime = 1740641630;
         bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
         //uint256 monitored_hash_path,
