@@ -23,7 +23,7 @@ contract Deploy is Script {
     function run() external {
         // load ENV variables first
         uint256 key = vm.envUint("WALLET_PRIVATE_KEY");
-        address verifierAddress = vm.envAddress("VERIFIER_ROUTER_ADDRESS");
+        address verifierAddress = vm.envAddress("VERIFIER_ROUTER_ADDRESS"); /// @dev - RISC Zero Verifier Router contract address on Ethereum Sepolia testnet. 
         vm.startBroadcast(key);
 
         IRiscZeroVerifier verifier = IRiscZeroVerifier(verifierAddress);

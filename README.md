@@ -19,6 +19,16 @@ sh guests/tests/runningGuestProgram_smart-meter.sh
 sh ./contracts/scripts/runningScript_Deploy.sh
 ```
 
+<br>
+
+## Running the Test of SCs
+- Run the `./contracts/test/EnergyAggregator.t.sol`
+```bash
+sh ./contracts/test/runningTest_EnergyAggregator.sh
+```
+
+<br>
+
 ### Running the Apps
 - Run the `./apps/src/main.rs`
 ```bash

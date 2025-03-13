@@ -18,25 +18,31 @@ contract EnergyAggregator {
     ///         It can be set by calling the `set` function.
     uint256 public energyAmountToBeSold; /// @dev - This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
 
+    mapping(bytes => mapping(bytes32 => bool)) public monitoredNullifiers; /// @dev - To prevent from a proof double-spending attack.
+
     /// @notice Initialize the contract, binding it to a specified RISC Zero verifier.
     constructor(IRiscZeroVerifier _verifier) {
         verifier = _verifier;
         energyAmountToBeSold = 0;
     }
 
-    /// @notice Set the even number stored on the contract. Requires a RISC Zero proof that the number is even.
+    /// @notice - Store a given publicInputs into the contract. Requires a RISC Zero proof that the can prove whether or not an given energyAmountToBeSold exceed the all amount of energy avaiable in a producer's smart meter.
     function submitEnergyAmountToBeSold(
         uint256 _energyAmountToBeSold, 
-        uint256 _monitored_time,
-        bytes32 _monitored_merkle_root,
+        uint256 _monitoredTime,
+        bytes32 _monitoredMerkleRoot,
         //uint256 _monitored_hash_path,
-        bool _monitored_nullifier,
+        bytes32 _monitoredNullifier,    /// @dev - Nullifier (Hash) is a unique identifier for a proof, which is used to prevent double-spending attacks.
         bytes calldata seal
     ) public { /// @dev - Submitted by a Producer.
+        // @dev - Validation in the smart contract level
+        require(_energyAmountToBeSold > 0, "Energy amount to be sold must be greater than 0");
+
         // Construct the expected journal data. Verify will fail if journal does not match.
-        bytes memory journal = abi.encode(_energyAmountToBeSold, _monitored_time, _monitored_merkle_root, _monitored_nullifier);
-        verifier.verify(seal, imageId, sha256(journal));
+        bytes memory journal = abi.encode(_energyAmountToBeSold, _monitoredTime, _monitoredMerkleRoot, _monitoredNullifier);
+        verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
         energyAmountToBeSold = _energyAmountToBeSold;
+        monitoredNullifiers[seal][_monitoredNullifier] = true; /// @dev - To prevent from a proof double-spending attack.
     }
 
     /// @notice Returns the number stored.
@@ -44,5 +50,14 @@ contract EnergyAggregator {
         return energyAmountToBeSold;
     }
 
-    /// [TODO]:
+    /// [TODO]: Implement the following functions.
+    /// @notice - A energy buyer create a buy order.
+    function createBuyOrder() public {
+        // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
+        _matchBuyOrderWithSellOrder();
+    }
+    
+    function _matchBuyOrderWithSellOrder() internal {
+        // [TODO]: Implement the logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
+    }
 }
