@@ -24,7 +24,7 @@ contract EnergyAggregator {
         energyAmountToBeSold = 0;
     }
 
-    /// @notice Set the even number stored on the contract. Requires a RISC Zero proof that the number is even.
+    /// @notice - Store a given publicInputs into the contract. Requires a RISC Zero proof that the can prove whether or not an given energyAmountToBeSold exceed the all amount of energy avaiable in a producer's smart meter.
     function submitEnergyAmountToBeSold(
         uint256 _energyAmountToBeSold, 
         uint256 _monitored_time,
@@ -35,7 +35,7 @@ contract EnergyAggregator {
     ) public { /// @dev - Submitted by a Producer.
         // Construct the expected journal data. Verify will fail if journal does not match.
         bytes memory journal = abi.encode(_energyAmountToBeSold, _monitored_time, _monitored_merkle_root, _monitored_nullifier);
-        verifier.verify(seal, imageId, sha256(journal));
+        verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
         energyAmountToBeSold = _energyAmountToBeSold;
     }
 
@@ -44,5 +44,14 @@ contract EnergyAggregator {
         return energyAmountToBeSold;
     }
 
-    /// [TODO]:
+    /// [TODO]: Implement the following functions.
+    /// @notice - A energy buyer create a buy order.
+    function createBuyOrder() public {
+        // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
+        _matchBuyOrderWithSellOrder();
+    }
+    
+    function _matchBuyOrderWithSellOrder() internal {
+        // [TODO]: Implement the logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
+    }
 }
