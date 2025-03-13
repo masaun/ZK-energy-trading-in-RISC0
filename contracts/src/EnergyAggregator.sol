@@ -18,6 +18,8 @@ contract EnergyAggregator {
     ///         It can be set by calling the `set` function.
     uint256 public energyAmountToBeSold; /// @dev - This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
 
+    mapping(bytes => mapping(bytes32 => bool)) public monitoredNullifiers; /// @dev - To prevent from a proof double-spending attack.
+
     /// @notice Initialize the contract, binding it to a specified RISC Zero verifier.
     constructor(IRiscZeroVerifier _verifier) {
         verifier = _verifier;
@@ -30,7 +32,7 @@ contract EnergyAggregator {
         uint256 _monitoredTime,
         bytes32 _monitoredMerkleRoot,
         //uint256 _monitored_hash_path,
-        bool _monitoredNullifier,
+        bytes32 _monitoredNullifier,    /// @dev - Nullifier (Hash) is a unique identifier for a proof, which is used to prevent double-spending attacks.
         bytes calldata seal
     ) public { /// @dev - Submitted by a Producer.
         // @dev - Validation in the smart contract level
@@ -40,6 +42,7 @@ contract EnergyAggregator {
         bytes memory journal = abi.encode(_energyAmountToBeSold, _monitoredTime, _monitoredMerkleRoot, _monitoredNullifier);
         verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
         energyAmountToBeSold = _energyAmountToBeSold;
+        monitoredNullifiers[seal][_monitoredNullifier] = true; /// @dev - To prevent from a proof double-spending attack.
     }
 
     /// @notice Returns the number stored.

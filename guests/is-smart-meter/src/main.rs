@@ -35,7 +35,7 @@ fn main() {
     let input_monitored_time: u64 = env::read();
     let input_monitored_merkle_root: String = env::read();
     //let input_monitored_hash_path: Vec<String> = Vec::<String>::new();
-    let input_monitored_nullifier: bool = env::read();
+    let input_monitored_nullifier: String = env::read();
     //let mut input_number_bytes = Vec::<u8>::new();
     //let mut input_total_exact_amount_of_energy_available_bytes = Vec::<u8>::new();
     //let mut input_electricity_bill_data: ElectricityBillData = env::read();

@@ -42,7 +42,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         uint256 monitoredTime = 1740641630;
         bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
         //uint256 monitored_hash_path,
-        bool monitoredNullifier = true;
+        bytes32 monitoredNullifier = 0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8;
 
         RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
 
@@ -69,7 +69,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         uint256 monitoredTime = 1740641630;
         bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
         //uint256 monitored_hash_path,
-        bool monitoredNullifier = true;
+        bytes32 monitoredNullifier = 0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8;
 
         /// @dev - Generate (= Prove) a new mock proof.
         RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));

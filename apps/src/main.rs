@@ -130,7 +130,7 @@ async fn main() -> Result<()> {
     let input_monitored_time: u64 = 1740641630;
     let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
     //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
-    let input_monitored_nullifier: bool = true;
+    let input_monitored_nullifier: String = "0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8".to_string();
     tracing::info!("'input_amount_of_energy_to_be_sold' to publish: {}\n", input_amount_of_energy_to_be_sold);
     tracing::info!("'input_total_exact_amount_of_energy_available' to publish: {}\n", input_total_exact_amount_of_energy_available);
     tracing::info!("'input_current_time' to publish: {}\n", input_current_time);
