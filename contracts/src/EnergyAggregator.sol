@@ -30,8 +30,9 @@ contract EnergyAggregator {
         //energyAmountToBeSold = 0;
     }
 
+    /// @notice - Create an energy sell order with a given energy amount to be sold.
     /// @notice - Store a given publicInputs into the contract. Requires a RISC Zero proof that the can prove whether or not an given energyAmountToBeSold exceed the all amount of energy avaiable in a producer's smart meter.
-    function submitEnergyAmountToBeSold( /// [TODO]: Rename this function name with "createSellOrderOfEnergy()"
+    function createSellOrder( /// [TODO]: Rename this function name with "createSellOrderOfEnergy()"
         uint256 _energyAmountToBeSold, 
         uint256 _monitoredTime,
         bytes32 _monitoredMerkleRoot,
@@ -46,7 +47,8 @@ contract EnergyAggregator {
         bytes memory journal = abi.encode(_energyAmountToBeSold, _monitoredTime, _monitoredMerkleRoot, _monitoredNullifier);
         verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
 
-        /// @dev - sellOrderId is counted from 1.
+        /// @dev - Store the following sell order info into "on-chain".
+        /// @dev - (NOTE: sellOrderId is counted from 1)
         sellOrderId++;
         DataTypes.SellOrder memory sellOrder = DataTypes.SellOrder({
             energyAmountToBeSold: _energyAmountToBeSold,
@@ -84,8 +86,7 @@ contract EnergyAggregator {
     //     return energySellers[sellOrderId];
     // }
 
-    /// [TODO]: Implement the following functions.
-    /// @notice - A energy buyer create a buy order /w the energy amount that the buyer want to buy.
+    /// @notice - Create an energy buy order /w the energy amount that the buyer want to buy.
     function createBuyOrderOfEnergy(uint256 energyAmountToBeBought) public {
         // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
         // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
