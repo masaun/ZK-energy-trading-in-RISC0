@@ -131,6 +131,7 @@ async fn main() -> Result<()> {
     let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
     //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
     let input_monitored_nullifier: String = "0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8".to_string();
+
     tracing::info!("'input_amount_of_energy_to_be_sold' to publish: {}\n", input_amount_of_energy_to_be_sold);
     tracing::info!("'input_total_exact_amount_of_energy_available' to publish: {}\n", input_total_exact_amount_of_energy_available);
     tracing::info!("'input_current_time' to publish: {}\n", input_current_time);
@@ -227,17 +228,17 @@ async fn main() -> Result<()> {
         .await?;
     tracing::info!("Request 0x{request_id:x} fulfilled");
 
-    // Interact with the EvenNumber contract by calling the set function with our number and
+    // Interact with the EnergyAggregator contract by calling the createSellOrder() function with our number and
     // the seal (i.e. proof) returned by the market.
     let energy_aggregator = IEnergyAggregatorInstance::new(
         args.energy_aggregator_address,
-        boundless_client.provider().clone(), // @dev - IRiscZeroVerifier contract instance
+        boundless_client.provider().clone(), // @dev - a provider info from the IRiscZeroVerifier contract instance
     );
     let tx_of_submitEnergyAmountToBeSold = energy_aggregator
         .createSellOrder(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EnergyAggregator#submitEnergyAmountToBeSold() function
         .from(boundless_client.caller());
 
-    tracing::info!("Broadcasting tx calling EvenNumber set function");
+    tracing::info!("Broadcasting tx calling the EnergyAggregator#createSellOrder() function");
     let pending_tx = tx_of_submitEnergyAmountToBeSold.send().await.context("failed to broadcast tx")?;
     tracing::info!("Sent tx {}", pending_tx.tx_hash());
     let tx_hash = pending_tx
@@ -247,12 +248,12 @@ async fn main() -> Result<()> {
         .context("failed to confirm tx")?;
     tracing::info!("Tx {:?} confirmed", tx_hash);
 
-    // We query the value stored at the EvenNumber address to check it was set correctly
+    // We query the value stored at the EnergyAggregator address to check it was stored correctly
     let amount_of_energy_to_be_sold = energy_aggregator
         .getEnergyAmountToBeSold() // @dev - Call the EnergyAggregator#getEnergyAmountToBeSold() function
         .call()
         .await
-        .context("failed to get number from contract")?
+        .context("failed to get the amount of energy to be sold from contract")?
         ._0;
     tracing::info!(
         "amount_of_energy_to_be_sold for address: {:?} is set to {:?}",
