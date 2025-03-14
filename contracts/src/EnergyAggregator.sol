@@ -27,7 +27,7 @@ contract EnergyAggregator {
     }
 
     /// @notice - Store a given publicInputs into the contract. Requires a RISC Zero proof that the can prove whether or not an given energyAmountToBeSold exceed the all amount of energy avaiable in a producer's smart meter.
-    function submitEnergyAmountToBeSold(
+    function submitEnergyAmountToBeSold( /// [TODO]: Rename this function name with "createSellOrderOfEnergy()"
         uint256 _energyAmountToBeSold, 
         uint256 _monitoredTime,
         bytes32 _monitoredMerkleRoot,
@@ -51,13 +51,13 @@ contract EnergyAggregator {
     }
 
     /// [TODO]: Implement the following functions.
-    /// @notice - A energy buyer create a buy order.
-    function createBuyOrder() public {
+    /// @notice - A energy buyer create a buy order /w the energy amount that the buyer want to buy.
+    function createBuyOrderOfEnergy(uint256 energyAmountToBeBought) public {
         // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
-        _matchBuyOrderWithSellOrder();
+        _matchBuyOrderWithSellOrder(energyAmountToBeBought);
     }
     
-    function _matchBuyOrderWithSellOrder() internal {
+    function _matchBuyOrderWithSellOrder(uint256 energyAmountToBeBought) internal {
         // [TODO]: Implement the logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
     }
 }
