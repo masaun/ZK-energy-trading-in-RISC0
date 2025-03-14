@@ -46,11 +46,11 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
 
         RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
 
-        energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
+        energyAggregator.createSellOrder(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
         assertEq(energyAggregator.getSellOrder(1).energyAmountToBeSold, energyAmountToBeSold);
     }
 
-    // function test_submitEnergyAmountToBeSold_with_Zero() public {
+    // function test_createSellOrder_with_Zero() public {
     //     uint256 energyAmountToBeSold = 0;  /// @dev - 100 kWh
     //     uint256 monitoredTime = 1740641630;
     //     bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
@@ -59,7 +59,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
 
     //     RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
 
-    //     energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
+    //     energyAggregator.createSellOrder(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
     //     assertEq(energyAggregator.getEnergyAmountToBeSold(), energyAmountToBeSold);
     // }
 
@@ -79,6 +79,6 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         /// @dev - Verify the mock proof-generated via the function below.
         vm.expectRevert("Energy amount to be sold must be greater than 0"); /// @dev - This expected revert message must correspond to an error message in the SC level validation in the submitEnergyAmountToBeSold().
         //vm.expectRevert(VerificationFailed.selector);
-        energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
+        energyAggregator.createSellOrder(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
     }
 }

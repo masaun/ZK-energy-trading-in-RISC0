@@ -234,7 +234,7 @@ async fn main() -> Result<()> {
         boundless_client.provider().clone(), // @dev - IRiscZeroVerifier contract instance
     );
     let tx_of_submitEnergyAmountToBeSold = energy_aggregator
-        .submitEnergyAmountToBeSold(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EnergyAggregator#submitEnergyAmountToBeSold() function
+        .createSellOrder(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EnergyAggregator#submitEnergyAmountToBeSold() function
         .from(boundless_client.caller());
 
     tracing::info!("Broadcasting tx calling EvenNumber set function");
