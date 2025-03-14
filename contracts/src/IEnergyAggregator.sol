@@ -15,6 +15,14 @@
 pragma solidity ^0.8.20;
 
 interface IEnergyAggregator {
-    function submitEnergyAmountToBeSold(uint256 _energyAmountToBeSold, bytes calldata seal) external;
+    function createSellOrder(
+        uint256 _energyAmountToBeSold, 
+        uint256 _monitoredTime,
+        bytes32 _monitoredMerkleRoot,
+        //uint256 _monitored_hash_path,
+        bytes32 _monitoredNullifier,    /// @dev - Nullifier (Hash) is a unique identifier for a proof, which is used to prevent double-spending attacks.
+        bytes calldata seal) external;
+
+
     function getEnergyAmountToBeSold() external view returns (uint256);
 }
