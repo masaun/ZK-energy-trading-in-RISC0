@@ -67,6 +67,7 @@ contract EnergyAggregator {
         //energySellers[sellOrderId] = msg.sender;
 
         /// @dev - To prevent from a proof double-spending attack.
+        require(monitoredNullifiers[seal][_monitoredNullifier] == false, "The proof has already been used");
         monitoredNullifiers[seal][_monitoredNullifier] = true;
     }
 
