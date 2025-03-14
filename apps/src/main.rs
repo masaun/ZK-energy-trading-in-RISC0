@@ -17,7 +17,7 @@ use std::{ops::Add, time::Duration};
 use crate::energy_aggregator::IEnergyAggregator::IEnergyAggregatorInstance;
 //use crate::even_number::IEvenNumber::IEvenNumberInstance;
 use alloy::{
-    primitives::{utils::parse_ether, Address, U256},
+    primitives::{utils::parse_ether, Address, U256, FixedBytes},
     signers::local::PrivateKeySigner,
     sol_types::SolValue,
 };
@@ -33,6 +33,7 @@ use guests::{IS_SMART_METER_ELF, IS_SMART_METER_ID}; // "ELF" and "image ID" (Im
 //use guests::{IS_EVEN_ELF, IS_EVEN_ID}; // "ELF" and "image ID" (ImageID.sol#IS_EVEN_ID)
 use risc0_zkvm::{default_executor, sha::Digestible};
 use url::Url;
+use hex;
 
 /// Timeout for the transaction to be confirmed.
 pub const TX_TIMEOUT: Duration = Duration::from_secs(30);
@@ -235,9 +236,17 @@ async fn main() -> Result<()> {
         boundless_client.provider().clone(), // @dev - a provider info from the IRiscZeroVerifier contract instance
     );
     let tx_of_submitEnergyAmountToBeSold = energy_aggregator
-        .createSellOrder(U256::from(args.amount_of_energy_to_be_sold), seal)  // @dev - Call the EnergyAggregator#submitEnergyAmountToBeSold() function
+        .createSellOrder(
+            U256::from(args.amount_of_energy_to_be_sold), 
+            U256::from(input_monitored_time),
+            FixedBytes::from_slice(&hex::decode(input_monitored_merkle_root.trim_start_matches("0x")).unwrap()),
+            FixedBytes::from_slice(&hex::decode(input_monitored_nullifier.trim_start_matches("0x")).unwrap()),
+            seal
+        )  // @dev - Call the EnergyAggregator#submitEnergyAmountToBeSold() function
         .from(boundless_client.caller());
 
+        //.createSellOrder(U256::from(args.amount_of_energy_to_be_sold), /* alloy::alloy_primitives::Uint<256, 4> */, /* alloy::alloy_primitives::FixedBytes<32> */, /* alloy::alloy_primitives::FixedBytes<32> */, seal)
+    
     tracing::info!("Broadcasting tx calling the EnergyAggregator#createSellOrder() function");
     let pending_tx = tx_of_submitEnergyAmountToBeSold.send().await.context("failed to broadcast tx")?;
     tracing::info!("Sent tx {}", pending_tx.tx_hash());
