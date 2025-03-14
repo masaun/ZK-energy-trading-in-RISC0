@@ -14,16 +14,15 @@ contract EnergyAggregator {
     ///         (in this case, checking if a number is even) are considered valid.
     bytes32 public constant imageId = ImageID.IS_SMART_METER_ID;
 
-    /// @notice A number that is guaranteed, by the RISC Zero zkVM, to be even.
-    ///         It can be set by calling the `set` function.
-    uint256 public energyAmountToBeSold; /// @dev - This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
+    uint256 public sellOrderId;
+    mapping(uint256 => uint256) public energyAmountToBeSolds; /// @dev - sellOrderId -> energyAmountToBeSold / This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
 
     mapping(bytes => mapping(bytes32 => bool)) public monitoredNullifiers; /// @dev - To prevent from a proof double-spending attack.
 
     /// @notice Initialize the contract, binding it to a specified RISC Zero verifier.
     constructor(IRiscZeroVerifier _verifier) {
         verifier = _verifier;
-        energyAmountToBeSold = 0;
+        //energyAmountToBeSold = 0;
     }
 
     /// @notice - Store a given publicInputs into the contract. Requires a RISC Zero proof that the can prove whether or not an given energyAmountToBeSold exceed the all amount of energy avaiable in a producer's smart meter.
@@ -38,26 +37,37 @@ contract EnergyAggregator {
         // @dev - Validation in the smart contract level
         require(_energyAmountToBeSold > 0, "Energy amount to be sold must be greater than 0");
 
+        /// @dev - sellOrderId is counted from 1.
+        sellOrderId++;
+
         // Construct the expected journal data. Verify will fail if journal does not match.
         bytes memory journal = abi.encode(_energyAmountToBeSold, _monitoredTime, _monitoredMerkleRoot, _monitoredNullifier);
         verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
-        energyAmountToBeSold = _energyAmountToBeSold;
+        energyAmountToBeSolds[sellOrderId] = _energyAmountToBeSold;
         monitoredNullifiers[seal][_monitoredNullifier] = true; /// @dev - To prevent from a proof double-spending attack.
     }
 
     /// @notice Returns the number stored.
-    function getEnergyAmountToBeSold() public view returns (uint256) {
-        return energyAmountToBeSold;
+    function getEnergyAmountToBeSold(uint256 sellOrderId) public view returns (uint256) {
+        return energyAmountToBeSolds[sellOrderId];
     }
 
     /// [TODO]: Implement the following functions.
     /// @notice - A energy buyer create a buy order /w the energy amount that the buyer want to buy.
     function createBuyOrderOfEnergy(uint256 energyAmountToBeBought) public {
         // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
+        // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
         _matchBuyOrderWithSellOrder(energyAmountToBeBought);
     }
     
     function _matchBuyOrderWithSellOrder(uint256 energyAmountToBeBought) internal {
         // [TODO]: Implement the logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
+        // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
+        for (uint256 i = 1; i <= sellOrderId; i++) {
+            if (energyAmountToBeSolds[i] == energyAmountToBeBought) {
+                // [TODO]: Matched -> Execute the transaction (i.e. Pay a seller-matched for buying the energy amount).
+                // [TODO]: Ideally, a Seller's "Asking SellingPrice" is also needed.
+            }
+        }
     }
 }
