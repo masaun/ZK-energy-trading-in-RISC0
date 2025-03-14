@@ -34,7 +34,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         //verifier = IRiscZeroVerifier(RISCZERO_VERIFIER);
         verifier = new RiscZeroMockVerifier(0); /// @dev - "Mock" Verifier (which is used for "proving" in this test)
         energyAggregator = new EnergyAggregator(verifier);
-        assertEq(energyAggregator.getEnergyAmountToBeSold(1), 0);
+        assertEq(energyAggregator.getSellOrder(1).energyAmountToBeSold, 0);
     }
 
     function test_submitEnergyAmountToBeSold() public {
@@ -47,7 +47,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
 
         energyAggregator.submitEnergyAmountToBeSold(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
-        assertEq(energyAggregator.getEnergyAmountToBeSold(1), energyAmountToBeSold);
+        assertEq(energyAggregator.getSellOrder(1).energyAmountToBeSold, energyAmountToBeSold);
     }
 
     // function test_submitEnergyAmountToBeSold_with_Zero() public {
