@@ -16,6 +16,7 @@ contract EnergyAggregator {
 
     uint256 public sellOrderId;
     mapping(uint256 => uint256) public energyAmountToBeSolds; /// @dev - sellOrderId -> energyAmountToBeSold / This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
+    mapping(uint256 => address) public energySellers;         /// @dev - sellOrderId -> energySeller address
 
     mapping(bytes => mapping(bytes32 => bool)) public monitoredNullifiers; /// @dev - To prevent from a proof double-spending attack.
 
@@ -44,12 +45,18 @@ contract EnergyAggregator {
         bytes memory journal = abi.encode(_energyAmountToBeSold, _monitoredTime, _monitoredMerkleRoot, _monitoredNullifier);
         verifier.verify(seal, imageId, sha256(journal)); /// @dev - "journal" is an "encoded-publicInputs" in bytes type data.
         energyAmountToBeSolds[sellOrderId] = _energyAmountToBeSold;
+        energySellers[sellOrderId] = msg.sender;
         monitoredNullifiers[seal][_monitoredNullifier] = true; /// @dev - To prevent from a proof double-spending attack.
     }
 
     /// @notice Returns the number stored.
     function getEnergyAmountToBeSold(uint256 sellOrderId) public view returns (uint256) {
         return energyAmountToBeSolds[sellOrderId];
+    }
+
+    /// @notice Returns the number stored.
+    function getEnergySeller(uint256 sellOrderId) public view returns (address) {
+        return energySellers[sellOrderId];
     }
 
     /// [TODO]: Implement the following functions.
@@ -64,7 +71,8 @@ contract EnergyAggregator {
         // [TODO]: Implement the logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
         // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
         for (uint256 i = 1; i <= sellOrderId; i++) {
-            if (energyAmountToBeSolds[i] == energyAmountToBeBought) {
+            if (getEnergyAmountToBeSold(i) == energyAmountToBeBought) {
+                address energySeller = getEnergySeller(i);
                 // [TODO]: Matched -> Execute the transaction (i.e. Pay a seller-matched for buying the energy amount).
                 // [TODO]: Ideally, a Seller's "Asking SellingPrice" is also needed.
             }
