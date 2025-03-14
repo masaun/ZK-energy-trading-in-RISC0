@@ -50,15 +50,30 @@ mod energy_aggregator {
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-    /// The number to publish to the EvenNumber contract.
-    #[clap(short, long)]
-    amount_of_energy_to_be_sold: u64, // @dev - Used in CLI as an option / The energyAmountToBeSold to publish to the EnergyAggregator contract.
-    //number: u32,           // @dev - Used in CLI as an option / The number to publish to the EvenNumber contract.
+    /// The input data to be stored into the EnergyAggregator contract.
+    #[clap(short, long, env)]
+    amount_of_energy_to_be_sold: String, // @dev - Used in CLI as an option / The energyAmountToBeSold to publish to the EnergyAggregator contract.
+    //number: u32,                    // @dev - Used in CLI as an option / The number to publish to the EvenNumber contract.
+
+    #[clap(short, long, env)]
+    total_exact_amount_of_energy_available: String,
+
+    #[clap(short, long, env)]
+    current_time: String,
+
+    #[clap(short = 'y', long, env)]
+    monitored_time: String,
+
+    #[clap(short = 'q', long, env)]
+    monitored_merkle_root: String,
+
+    #[clap(short, long, env)]
+    monitored_nullifier: String,
 
     /// URL of the Ethereum RPC endpoint.
     #[clap(short, long, env)]
     rpc_url: Url,
-    /// Private key used to interact with the EvenNumber contract.
+    /// Private key used to interact with the EnergyAggregator contract.
     #[clap(short, long, env)]
     wallet_private_key: PrivateKeySigner,
     /// Submit the request offchain via the provided order stream service url.
@@ -71,10 +86,10 @@ struct Args {
     #[clap(flatten)]
     storage_config: Option<StorageProviderConfig>,
 
-    /// Address of the EvenNumber contract.
+    /// Address of the EnergyAggregator contract.
     #[clap(short, long, env)]
-    energy_aggregator_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
-    //even_number_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
+    energy_aggregator_address: Address, // @dev - Used in CLI as an option / The deployed-address of the EnergyAggregator contract.
+    //even_number_address: Address,     // @dev - Used in CLI as an option / The deployed-address of the EvenNumber contract.
     
     /// Address of the RiscZeroSetVerifier contract.
     #[clap(short, long, env)]
@@ -124,14 +139,21 @@ async fn main() -> Result<()> {
     tracing::info!("amount_of_energy_to_be_sold to publish: {}\n", args.amount_of_energy_to_be_sold); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
     //tracing::info!("Number to publish: {}\n", args.number); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
     
-    let input_amount_of_energy_to_be_sold: u64 = 800;      // @dev - Input value to be loaded into the ZK circuit.
-    //let input_amount_of_energy_to_be_sold: u64 = 10000;  // @dev - (Wrong) Input value --> [Result]: Successful to reverted in ZK circuit /w the error mssage of "total exact amount of energy available must be greater than the amount of energy to be sold".
-    let input_total_exact_amount_of_energy_available: u64 = 1100;
-    let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
-    let input_monitored_time: u64 = 1740641630;
-    let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
-    //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
-    let input_monitored_nullifier: String = "0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8".to_string();
+    let input_amount_of_energy_to_be_sold: u64 = args.amount_of_energy_to_be_sold.parse().expect("converted from String to u64"); // @dev - Convert the input string to u64
+    let input_total_exact_amount_of_energy_available: u64 = args.total_exact_amount_of_energy_available.parse().expect("converted from String to u64");
+    let input_current_time: u64 = args.current_time.parse().expect("converted from String to u64");
+    let input_monitored_time: u64 = args.monitored_time.parse().expect("converted from String to u64");
+    let input_monitored_merkle_root: String = args.monitored_merkle_root;
+    //let input_monitored_hash_path: Vec<String> = args.monitored_hash_path;
+    let input_monitored_nullifier: String = args.monitored_nullifier;
+    // let input_amount_of_energy_to_be_sold: u64 = 800;      // @dev - Input value to be loaded into the ZK circuit.
+    // //let input_amount_of_energy_to_be_sold: u64 = 10000;  // @dev - (Wrong) Input value --> [Result]: Successful to reverted in ZK circuit /w the error mssage of "total exact amount of energy available must be greater than the amount of energy to be sold".
+    // let input_total_exact_amount_of_energy_available: u64 = 1100;
+    // let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
+    // let input_monitored_time: u64 = 1740641630;
+    // let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
+    // //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
+    // let input_monitored_nullifier: String = "0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8".to_string();
 
     tracing::info!("'input_amount_of_energy_to_be_sold' to publish: {}\n", input_amount_of_energy_to_be_sold);
     tracing::info!("'input_total_exact_amount_of_energy_available' to publish: {}\n", input_total_exact_amount_of_energy_available);
@@ -237,7 +259,7 @@ async fn main() -> Result<()> {
     );
     let tx_of_submitEnergyAmountToBeSold = energy_aggregator
         .createSellOrder(
-            U256::from(args.amount_of_energy_to_be_sold), 
+            U256::from(input_amount_of_energy_to_be_sold), 
             U256::from(input_monitored_time),
             FixedBytes::from_slice(&hex::decode(input_monitored_merkle_root.trim_start_matches("0x")).unwrap()),
             FixedBytes::from_slice(&hex::decode(input_monitored_nullifier.trim_start_matches("0x")).unwrap()),
