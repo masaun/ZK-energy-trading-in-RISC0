@@ -17,10 +17,13 @@ contract EnergyAggregator {
     ///         (in this case, checking if a number is even) are considered valid.
     bytes32 public constant imageId = ImageID.SMART_METER_ID;
 
+    uint256 public energyPricePerKwh = 1 * 1e10; /// @dev - The energy price per 1. At this point, we set 0.00000001 ETH/Kwh as a fixed-price. (However, in the future, this should be set by a Energy Producer.)
+
     uint256 public sellOrderId;
     mapping(uint256 => DataTypes.SellOrder) public sellOrders; /// @dev - sellOrderId -> SellOrder struct
     mapping(uint256 => uint256) public energyAmountToBeSolds;  /// @dev - sellOrderId -> energyAmountToBeSold / This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
     mapping(uint256 => address) public energySellers;          /// @dev - sellOrderId -> energySeller address
+    mapping(address => uint256) public buyerBalances;          /// @dev - buyer address -> buyer's NativeETH balance in this contract.
 
     mapping(bytes => mapping(bytes32 => bool)) public monitoredNullifiers; /// @dev - To prevent from a proof double-spending attack.
 
@@ -74,6 +77,7 @@ contract EnergyAggregator {
     }  
 
     /// @notice - Create an energy buy order /w the energy amount that the buyer want to buy.
+    /// @param energyAmountToBeBought - The energy amount that the buyer want to buy (Unit: kwh).
     function createBuyOrderOfEnergy(uint256 energyAmountToBeBought) public {
         // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
         // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
@@ -84,15 +88,38 @@ contract EnergyAggregator {
         // [TODO]: Implement the logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
         // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
         for (uint256 i = 1; i <= sellOrderId; i++) {
+            // Matched -> Execute the transaction (i.e. Pay a seller-matched for buying the energy amount).
             if (getSellOrder(i).energyAmountToBeSold == energyAmountToBeBought) {
                 address energySeller = getSellOrder(i).energySeller;
-                // [TODO]: Matched -> Execute the transaction (i.e. Pay a seller-matched for buying the energy amount).
                 DataTypes.SellOrder storage sellOrder = sellOrders[i];
                 require(sellOrder.orderMatched == false, "The order has already been matched");
                 sellOrder.orderMatched = true;
 
-                // [TODO]: Ideally, a Seller's "Asking SellingPrice" is also needed.
+                /// @dev - Paid from a buyer to a seller.
+                require(buyerBalances[msg.sender] >= energyPricePerKwh * energyAmountToBeBought, "Insufficient balance to buy this amount of energy");
+                energySeller.call{ value: energyPricePerKwh * energyAmountToBeBought }("");
+                buyerBalances[msg.sender] -= energyPricePerKwh * energyAmountToBeBought;
             }
         }
+    }
+
+    /**
+     * @notice - A buyer deposits native ETH into this contract.
+     */
+    function depositNativeETH() public payable returns (uint256) {
+        (bool success, ) = address(this).call{ value: msg.value }("");
+        require(success, "Deposit failed");
+        buyerBalances[msg.sender] += msg.value;
+        return buyerBalances[msg.sender];
+    }
+
+    /**
+     * @notice - A buyer withdraws native ETH from this contract.
+     */
+    function withdrawNativeETH(uint256 withdrawalEthAmount) public payable returns (uint256) {
+        (bool success, ) = address(this).call{ value: withdrawalEthAmount }("");
+        require(success, "Deposit failed");
+        buyerBalances[msg.sender] -= withdrawalEthAmount;
+        return buyerBalances[msg.sender];
     }
 }
