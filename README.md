@@ -1,14 +1,29 @@
-# ZK Energy Trading in RISC Zero / Boundless ⚡️
+# ZK Energy Trading Platform in RISC Zero / Boundless ⚡️
 
+## Tech stack
 
-## Installation - Cargo packages
+<br>
+
+## Overview
+
+- This is the ZK (Zero-Knowledge) based Energy Trading Platform in RISC Zero / Boundless.
+
+<br>
+
+## Deployed-addresses on Ethereum Sepolia testnet
+
+<br>
+
+## Installations
+
+### Install the cargo packages
 
 - 1/ Install the Cargo packages
 ```bash
 cargo build
 ```
 
-- 2/ Within the `contracts/test/Elf.sol`, the path (`SMART_METER_PATH`) should be fixed like this:
+- 2/ Within the `contracts/test/Elf.sol`, the **path** (`SMART_METER_PATH`) should be fixed like this:
 ```solidity
 library Elf {
     string public constant SMART_METER_PATH =
@@ -18,7 +33,7 @@ library Elf {
 
 <br>
 
-## Compile the smart contracts
+### Compile the smart contracts
 
 - Compile the smart contracts
 ```bash
@@ -27,7 +42,7 @@ forge build
 
 <br>
 
-## Running the test of the guest program
+### Running the test of the guest program
 
 - Run the test of the "smart-meter" guest program
 ```bash
@@ -44,7 +59,7 @@ sh ./contracts/scripts/runningScript_Deploy.sh
 
 <br>
 
-## Running the Test of SCs
+### Running the Test of SCs on Ethereum Sepolia testnet
 - Run the `./contracts/test/EnergyAggregator.t.sol`
 ```bash
 sh ./contracts/test/runningTest_EnergyAggregator.sh

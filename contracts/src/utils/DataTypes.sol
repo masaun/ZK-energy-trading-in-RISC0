@@ -10,6 +10,7 @@ library DataTypes {
         uint256 monitoredTime;
         bytes32 monitoredMerkleRoot;
         bytes32 monitoredNullifier;
+        bool orderMatched;
         bytes seal;
         bytes32 imageId;
         bytes32 journal;
