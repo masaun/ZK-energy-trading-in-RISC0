@@ -19,6 +19,10 @@ use guests::SMART_METER_ELF;
 use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
 use risc0_ethereum_contracts::encode_seal;
 
+use hex;
+use sha2::{digest::generic_array::GenericArray, Digest, Sha256};
+
+
 #[test]
 fn proves_available_electricity_amount_from_smart_meter() {
     let input_amount_of_energy_to_be_sold: u64 = 800; // @dev - Input value to be loaded into the ZK circuit.
@@ -27,8 +31,16 @@ fn proves_available_electricity_amount_from_smart_meter() {
     let input_monitored_time: u64 = 1740641630;
     let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
     //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
-    let input_monitored_nullifier: bool = true;
 
+    // Calculate the monitored_nullifier from the input data and store it into the variable.
+    let mut hasher = Sha256::new();
+    hasher.update(input_amount_of_energy_to_be_sold.to_string().as_bytes());
+    hasher.update(input_monitored_time.to_string().as_bytes());
+    hasher.update(input_monitored_merkle_root.as_bytes());
+    let hash = hasher.finalize(); // Note that calling `finalize()` consumes hasher
+    let input_monitored_nullifier: String = hex::encode(hash); // Convert GenericArray<u8, N> to a hexadecimal string
+
+    // Execute the guest program with the input data.
     let env = ExecutorEnv::builder()
         .write(&input_amount_of_energy_to_be_sold)
         .unwrap()
@@ -74,8 +86,16 @@ fn rejects_wrong_available_electricity_amount_from_smart_meter() {
     let input_monitored_time: u64 = 1740641630;
     let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
     //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
-    let input_monitored_nullifier: bool = true;
 
+    // Calculate the monitored_nullifier from the input data and store it into the variable.
+    let mut hasher = Sha256::new();
+    hasher.update(input_amount_of_energy_to_be_sold.to_string().as_bytes());
+    hasher.update(input_monitored_time.to_string().as_bytes());
+    hasher.update(input_monitored_merkle_root.as_bytes());
+    let hash = hasher.finalize(); // Note that calling `finalize()` consumes hasher
+    let input_monitored_nullifier: String = hex::encode(hash); // Convert GenericArray<u8, N> to a hexadecimal string
+
+    // Execute the guest program with the input data.
     let env = ExecutorEnv::builder()
         .write(&input_amount_of_energy_to_be_sold)
         .unwrap()
