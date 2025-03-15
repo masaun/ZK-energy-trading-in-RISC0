@@ -14,7 +14,7 @@
 
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
-use guests::IS_SMART_METER_ELF;
+use guests::SMART_METER_ELF;
 //use guests::IS_EVEN_ELF;
 use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
 use risc0_ethereum_contracts::encode_seal;

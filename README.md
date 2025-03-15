@@ -1,8 +1,25 @@
 # ZK Energy Trading in RISC Zero / Boundless ⚡️
 
 
-## Installation
+## Installation - Cargo packages
 
+- Install the Cargo packages
+```bash
+cargo build
+```
+
+<br>
+
+## Compile the smart contracts
+
+- Compile the smart contracts
+```bash
+forge build
+```
+
+
+
+<br>
 
 ## Running the test of the guest program
 
