@@ -20,6 +20,9 @@ use alloy_primitives::{ Uint, U256 };
 use alloy_sol_types::{ SolValue, Error, SolType };
 use risc0_zkvm::guest::env;
 
+use hex;
+use sha2::{digest::generic_array::GenericArray, Digest, Sha256};
+
 #[derive(Debug)]
 struct ElectricityBillData {
     seller_id: u32,
@@ -36,13 +39,18 @@ fn main() {
     let input_monitored_merkle_root: String = env::read();
     //let input_monitored_hash_path: Vec<String> = Vec::<String>::new();
     let input_monitored_nullifier: String = env::read();
-    //let mut input_number_bytes = Vec::<u8>::new();
-    //let mut input_total_exact_amount_of_energy_available_bytes = Vec::<u8>::new();
-    //let mut input_electricity_bill_data: ElectricityBillData = env::read();
 
-    //env::stdin().read_to_end(&mut input_number_bytes).unwrap();
-    //env::stdin().read_to_end(&mut input_total_exact_amount_of_energy_available_bytes).unwrap();
-    //env::stdin().read_to_end(&mut input_electricity_bill_data_bytes).unwrap();
+    // // Calculate the monitored_nullifier from the input data and store it into the variable.
+    // let mut hasher = Sha256::new();
+    // hasher.update(args.amount_of_energy_to_be_sold.clone());
+    // hasher.update(args.monitored_time.clone());
+    // hasher.update(args.monitored_merkle_root.clone());
+    // let hash = hasher.finalize(); // Note that calling `finalize()` consumes hasher
+    // let nullifier: String = hex::encode(hash); // Convert GenericArray<u8, N> to a hexadecimal string
+    // tracing::info!("nullifier (which is calculated in the guest program): {}\n", nullifier);
+
+    // // Constraint: Check the input data of the monitored_nullifier.
+    // assert!(input_monitored_nullifier == nullifier, "The input_monitored_nullifier is not correct.");
 
     // Decode and parse the input
     let amount_of_energy_to_be_sold = input_amount_of_energy_to_be_sold;

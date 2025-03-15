@@ -8,10 +8,14 @@ alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
 risc0-zkvm = { workspace = true, features = ["client"] }
 risc0-ethereum-contracts = { workspace = true }
+sha2 = "0.10.8"
+hex = "0.4"
 
 [build-dependencies]
 risc0-build = { workspace = true }
 risc0-build-ethereum = { workspace = true }
+sha2 = "0.10.8"
+hex = "0.4"
 
 [package.metadata.risc0]
 methods = ["is-smart-meter"]

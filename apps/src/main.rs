@@ -34,6 +34,7 @@ use guests::{IS_SMART_METER_ELF, IS_SMART_METER_ID}; // "ELF" and "image ID" (Im
 use risc0_zkvm::{default_executor, sha::Digestible};
 use url::Url;
 use hex;
+use sha2::{digest::generic_array::GenericArray, Digest, Sha256};
 
 /// Timeout for the transaction to be confirmed.
 pub const TX_TIMEOUT: Duration = Duration::from_secs(30);
@@ -136,31 +137,34 @@ async fn main() -> Result<()> {
     tracing::info!("Uploaded image to {}\n", image_url);
 
     // Encode the input and upload it to the storage provider.
-    tracing::info!("amount_of_energy_to_be_sold to publish: {}\n", args.amount_of_energy_to_be_sold); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
-    //tracing::info!("Number to publish: {}\n", args.number); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    tracing::info!("arg.amount_of_energy_to_be_sold: {}\n", args.amount_of_energy_to_be_sold); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    tracing::info!("arg.total_exact_amount_of_energy_available: {}\n", args.total_exact_amount_of_energy_available); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    tracing::info!("arg.current_time: {}\n", args.current_time); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    tracing::info!("arg.monitored_time: {}\n", args.monitored_time); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
+    tracing::info!("arg.monitored_merkle_root: {}\n", args.monitored_merkle_root); // @dev - [NOTE]: At the moment, this is not used as the input data. Instead, the constant number ("input_number" below) is used as the input data.
     
+    // Calculate the monitored_nullifier from the input data and store it into the variable.
+    let mut hasher = Sha256::new();
+    hasher.update(args.amount_of_energy_to_be_sold.clone());
+    hasher.update(args.monitored_time.clone());
+    hasher.update(args.monitored_merkle_root.clone());
+    let hash = hasher.finalize(); // Note that calling `finalize()` consumes hasher
+    //let input_monitored_nullifier: GenericArray<u8, _> = hash;
+    let input_monitored_nullifier: String = hex::encode(hash); // Convert GenericArray<u8, N> to a hexadecimal string
+    tracing::info!("input_monitored_nullifier: {}\n", input_monitored_nullifier);
+
+    // Store the input data into the variables
     let input_amount_of_energy_to_be_sold: u64 = args.amount_of_energy_to_be_sold.parse().expect("converted from String to u64"); // @dev - Convert the input string to u64
     let input_total_exact_amount_of_energy_available: u64 = args.total_exact_amount_of_energy_available.parse().expect("converted from String to u64");
     let input_current_time: u64 = args.current_time.parse().expect("converted from String to u64");
     let input_monitored_time: u64 = args.monitored_time.parse().expect("converted from String to u64");
     let input_monitored_merkle_root: String = args.monitored_merkle_root;
     //let input_monitored_hash_path: Vec<String> = args.monitored_hash_path;
-    let input_monitored_nullifier: String = args.monitored_nullifier;
-    // let input_amount_of_energy_to_be_sold: u64 = 800;      // @dev - Input value to be loaded into the ZK circuit.
-    // //let input_amount_of_energy_to_be_sold: u64 = 10000;  // @dev - (Wrong) Input value --> [Result]: Successful to reverted in ZK circuit /w the error mssage of "total exact amount of energy available must be greater than the amount of energy to be sold".
-    // let input_total_exact_amount_of_energy_available: u64 = 1100;
-    // let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
-    // let input_monitored_time: u64 = 1740641630;
-    // let input_monitored_merkle_root: String = "0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7".to_string();
-    // //let input_monitored_hash_path: Vec<String> = vec!["0x8da9e1c820f9dbd1589fd6585872bc1063588625729e7ab0797cfc63a00bd950".to_string(),"0x995788ffc103b987ad50f5e5707fd094419eb12d9552cc423bd0cd86a3861433".to_string()];
-    // let input_monitored_nullifier: String = "0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8".to_string();
-
     tracing::info!("'input_amount_of_energy_to_be_sold' to publish: {}\n", input_amount_of_energy_to_be_sold);
     tracing::info!("'input_total_exact_amount_of_energy_available' to publish: {}\n", input_total_exact_amount_of_energy_available);
     tracing::info!("'input_current_time' to publish: {}\n", input_current_time);
     tracing::info!("'input_monitored_time' to publish: {}\n", input_monitored_time);
     tracing::info!("'input_monitored_merkle_root' to publish: {}\n", input_monitored_merkle_root);
-    tracing::info!("'input_monitored_nullifier' to publish: {}\n", input_monitored_nullifier);
 
     //let input_builder = InputBuilder::new().write_slice(&U256::from(args.number).abi_encode());
     let input_builder = InputBuilder::new().write(&input_amount_of_energy_to_be_sold).unwrap()
