@@ -35,7 +35,7 @@
     - During the process of generating (proving) a proof in a ZK program, it would be validated whether or not the amount of energy-created with a sell order is equal to or less than the whole amount of energy-measured by the producer's smart meter. (This is called a "constraint")
     - Once the validation (constraint) would be passed in the ZK program, a proof wold be generated and a energy producer will receive it off-chain.
 
-  - 2-2/ Then, the energy producer would call the EnergyAggregator#`createSellOrder()` with a proof and public inputs as the arguments.
+  - 2-2/ Then, the energy producer would call the EnergyAggregator#`createSellOrder()` with a proof and public inputs (icl. `amount of energy to be sold`) as the arguments.
 
 - 3/ A energy consumer would deposit certain amount of native ETH into the EnergyAggregator contract via the EnergyAggregator#`depositNativeETH()`
   - By doing so, the amount of native ETH to be send would be added to the buyer's account in the EnergyAggregator contract (`buyerBalances[buyer's address]`).
