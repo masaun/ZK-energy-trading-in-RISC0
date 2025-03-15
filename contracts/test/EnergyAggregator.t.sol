@@ -37,7 +37,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         assertEq(energyAggregator.getSellOrder(1).energyAmountToBeSold, 0);
     }
 
-    function test_submitEnergyAmountToBeSold() public {
+    function test_createSellOrder() public {
         uint256 energyAmountToBeSold = 100;  /// @dev - 100 kWh
         uint256 monitoredTime = 1740641630;
         bytes32 monitoredMerkleRoot = 0xcc086fcc038189b4641db2cc4f1de3bb132aefbd65d510d817591550937818c7;
