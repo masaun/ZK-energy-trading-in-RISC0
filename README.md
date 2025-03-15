@@ -51,6 +51,10 @@
 
   - In the step 2/ above, the remained-amount of energy goes to a home battery stroage like [Tesla's Powerwall](https://www.tesla.com/powerwall)
 
+<br>
+
+## Userflow - Diagram
+- The diagram of the userflow: https://github.com/masaun/ZK-energy-trading-platform-in-RISC0/blob/develop/docs/diagrams/diagram_userflow_ZK-energy-trading-platform-in-RISC0.jpg
 
 <br>
 
