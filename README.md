@@ -1,8 +1,31 @@
 # ZK Energy Trading in RISC Zero / Boundless ⚡️
 
 
-## Installation
+## Installation - Cargo packages
 
+- 1/ Install the Cargo packages
+```bash
+cargo build
+```
+
+- 2/ Within the `contracts/test/Elf.sol`, the path (`SMART_METER_PATH`) should be fixed like this:
+```solidity
+library Elf {
+    string public constant SMART_METER_PATH =
+        "../../target/riscv-guest/guests/smart-meter/riscv32im-risc0-zkvm-elf/release/smart-meter";
+}
+```
+
+<br>
+
+## Compile the smart contracts
+
+- Compile the smart contracts
+```bash
+forge build
+```
+
+<br>
 
 ## Running the test of the guest program
 

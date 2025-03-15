@@ -14,7 +14,7 @@
 
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
-use guests::IS_SMART_METER_ELF;
+use guests::SMART_METER_ELF;
 //use guests::IS_EVEN_ELF;
 use risc0_zkvm::{default_executor, default_prover, ExecutorEnv, Receipt};
 use risc0_ethereum_contracts::encode_seal;
@@ -49,7 +49,7 @@ fn proves_available_electricity_amount_from_smart_meter() {
 
     // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
     let prover = default_prover();
-    let _receipt = prover.prove(env, IS_SMART_METER_ELF).unwrap().receipt;
+    let _receipt = prover.prove(env, SMART_METER_ELF).unwrap().receipt;
     //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
     println!("I know the factors of {:?}, and I can prove it!\n", _receipt);
 
@@ -96,7 +96,7 @@ fn rejects_wrong_available_electricity_amount_from_smart_meter() {
 
     // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
     let prover = default_prover();
-    let _receipt = prover.prove(env, IS_SMART_METER_ELF).unwrap().receipt;
+    let _receipt = prover.prove(env, SMART_METER_ELF).unwrap().receipt;
     //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
 
     // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
