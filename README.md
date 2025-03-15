@@ -1,12 +1,28 @@
-# ZK Energy Trading Platform in RISC Zero / Boundless ⚡️
+# ZK Energy Trading Platform ⚡️
 
 ## Tech stack
+
+- `ZK circuit`: Written in [`zkVM / Boundless`]() powered by [RISC Zero]()) 
+- Smart Contract: Written in Solidity (Framework: Foundry)
+- Blockchain: [`Ethereum Sepolia`]() (Testnet)
+
+<br>
+
+## Actors
+
 
 <br>
 
 ## Overview
 
-- This is the ZK (Zero-Knowledge) based Energy Trading Platform in RISC Zero / Boundless.
+- This is the ZK (Zero-Knowledge) based Energy Trading Platform in `zkVM / Boundless` powered by `RISC Zero`, which is the Zero-Knowledge based Energy Trading Platform that consists of the ZK programs (ZK circuits) and the smart contracts.
+
+- Through trading energy on this platform, each actor would get the following merits: 
+  - an energy producer ('s Smart Meter) can list a sell order of a specified amount of energy **without revealing** a **`whole` amount of energy available** in the producer's energy charger.
+
+  - an energy buyer ('s Smart Meter) can buy their desired-amount of energy, which is validated and a `proof` is attested via a ZK circuit.
+
+
 
 <br>
 
