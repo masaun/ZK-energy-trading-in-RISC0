@@ -78,7 +78,7 @@ contract EnergyAggregator {
 
     /// @notice - Create an energy buy order /w the energy amount that the buyer want to buy.
     /// @param energyAmountToBeBought - The energy amount that the buyer want to buy (Unit: kwh).
-    function createBuyOrderOfEnergy(uint256 energyAmountToBeBought) public {
+    function createBuyOrder(uint256 energyAmountToBeBought) public {
         // [TODO]: Matching logic that the buy order can automatically match with the sell order, which was submitted /w proof via the submitEnergyAmountToBeSold() above.
         // [TODO]: Ideally, it should be matched with 2 items (= "Asking Price" and "Asking Amount")
         _matchBuyOrderWithSellOrder(energyAmountToBeBought);

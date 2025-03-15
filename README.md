@@ -2,14 +2,16 @@
 
 ## Tech stack
 
-- `ZK circuit`: Written in [`zkVM / Boundless`]() powered by [RISC Zero]()) 
+- `ZK circuit`: Written in [`zkVM / Boundless`](https://beboundless.xyz/) powered by [RISC Zero](https://risczero.com/)
 - Smart Contract: Written in Solidity (Framework: Foundry)
-- Blockchain: [`Ethereum Sepolia`]() (Testnet)
+- Blockchain: [`Ethereum Sepolia`](https://sepolia.etherscan.io/) (Testnet)
 
 <br>
 
 ## Actors
-
+- Energy Producer's (Energy Seller's) smart meter
+- Energy Consumer's (Energy Buyer's) smart meter
+- Energy Aggregator smart contract
 
 <br>
 
@@ -17,11 +19,38 @@
 
 - This is the ZK (Zero-Knowledge) based Energy Trading Platform in `zkVM / Boundless` powered by `RISC Zero`, which is the Zero-Knowledge based Energy Trading Platform that consists of the ZK programs (ZK circuits) and the smart contracts.
 
-- Through trading energy on this platform, each actor would get the following merits: 
-  - an energy producer ('s Smart Meter) can list a sell order of a specified amount of energy **without revealing** a **`whole` amount of energy available** in the producer's energy charger.
+- By trading energy through this platform, each actor would get the following merits: 
+  - an energy producer ('s Smart Meter) can create a sell order of a specified-amount of energy **without revealing** a **`whole` amount of energy available** in the energy producer's energy charger.
 
-  - an energy buyer ('s Smart Meter) can buy their desired-amount of energy, which is validated and a `proof` is attested via a ZK circuit.
+  - an energy consumer ('s Smart Meter) can buy create a buy order of a desired-amount of energy, which is validated and a `proof` is attested via a ZK circuit.
 
+<br>
+
+## User flow
+
+
+- 1/ A energy producer's smart meter would measure a whole amount of energy avaialble.
+
+- 2/ A energy producer's smart meter create a sell order with a specified-amount of energy.
+  - 2-1/ At this point, the energy producer's smart meter would generate (prove) a proof via a ZK program (ZK circuit) `off-chain`. 
+    - During the process of generating (proving) a proof in a ZK program, it would be validated whether or not the amount of energy-created with a sell order is equal to or less than the whole amount of energy-measured by the producer's smart meter. (This is called a "constraint")
+    - Once the validation (constraint) would be passed in the ZK program, a proof wold be generated and a energy producer will receive it off-chain.
+
+  - 2-2/ Then, the energy producer would call the EnergyAggregator#`createSellOrder()` with a proof and public inputs as the arguments.
+
+- 3/ A energy consumer would deposit certain amount of native ETH into the EnergyAggregator contract via the EnergyAggregator#`depositNativeETH()`
+  - By doing so, the amount of native ETH to be send would be added to the buyer's account in the EnergyAggregator contract (`buyerBalances[buyer's address]`).
+
+- 4/ The energy consumer would create a buy order with a desired-amount of energy via the EnergyAggregator#`createBuyOrder()`.
+  - 4-1/ If this buy order would be matched with a sell order, the EnergyAggregator contract will transfer the payment to the producer's smart meter.
+
+
+- NOTE:
+  - In this scenario, we assume that both a producer's smart meter and a consumer's smart meter would hold a wallet (i.e. EOA /or smart contract wallet)
+
+  - In this scenario, an energy **price** would be set as a `fixed-price` (`0.00000001 ETH / kWh`). In the future, a seller and a buyer should be able to specify a dynamic price (desired-price).
+
+  - In the step 2/ above, the remained-amount of energy goes to a home battery stroage like [Tesla's Powerwall](https://www.tesla.com/powerwall))
 
 
 <br>
@@ -60,15 +89,15 @@ forge build
 
 ### Running the test of the guest program
 
-- Run the test of the "smart-meter" guest program
+- Run the test of the `smart-meter` ZK program (called a guest program in zkVM / Boundless powered by RISC Zero)
 ```bash
 sh guests/tests/runningGuestProgram_smart-meter.sh
 ```
 
 <br>
 
-### Deploy the SCs
-- Deploy SCs
+### Deploy the smart contracts
+- Deploy the EnergyAggregator contract.
 ```bash
 sh ./contracts/scripts/runningScript_Deploy.sh
 ```
@@ -76,14 +105,14 @@ sh ./contracts/scripts/runningScript_Deploy.sh
 <br>
 
 ### Running the Test of SCs on Ethereum Sepolia testnet
-- Run the `./contracts/test/EnergyAggregator.t.sol`
+- Run the test of the EnergyAggregator contract (`./contracts/test/EnergyAggregator.t.sol`).
 ```bash
 sh ./contracts/test/runningTest_EnergyAggregator.sh
 ```
 
 <br>
 
-### Running the Apps
+### Running the (backend) App
 - Run the `./apps/src/main.rs`
 ```bash
 sh ./apps/runningApp_main.sh
