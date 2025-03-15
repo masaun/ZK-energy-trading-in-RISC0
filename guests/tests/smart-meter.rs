@@ -78,8 +78,6 @@ fn proves_available_electricity_amount_from_smart_meter() {
 #[should_panic(expected = "total exact amount of energy available must be greater than the amount of energy to be sold")] // @dev - This expected-error message should correspond to the panice message in the constraint in the ZK circuit. 
 //#[should_panic(expected = "number must be more than 0")]
 fn rejects_wrong_available_electricity_amount_from_smart_meter() {
-    //let input_odd_number: u64 = 75; // @dev - Input value to be loaded into the ZK circuit.
-    //let odd_number = U256::from(75);
     let input_amount_of_energy_to_be_sold: u64 = 1304; // @dev - Input value to be loaded into the ZK circuit.
     let wrong_input_total_exact_amount_of_energy_available: u64 = 300;
     let input_current_time: u64 = 1740641628;  // @dev - UTC timestamp (2025-02-27 / 07:33:45)
@@ -117,9 +115,4 @@ fn rejects_wrong_available_electricity_amount_from_smart_meter() {
     // NOTE: Use the prover to run tests with actual proving + Produce a receipt by proving the specified ELF binary.
     let prover = default_prover();
     let _receipt = prover.prove(env, SMART_METER_ELF).unwrap().receipt;
-    //let _receipt = prover.prove(env, IS_EVEN_ELF).unwrap().receipt;
-
-    // NOTE: Use the executor to run tests "without" proving + Produce a journal (pubic Output).
-    //let prover_without_actual_proving = default_executor();
-    //let _journal = prover_without_actual_proving.execute(env, IS_EVEN_ELF).unwrap().journal;
 }

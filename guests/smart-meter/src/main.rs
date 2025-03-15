@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 use core::num;
 use std::io::Read;
 
@@ -53,20 +52,15 @@ fn main() {
 
     // Decode and parse the input
     let amount_of_energy_to_be_sold = input_amount_of_energy_to_be_sold;
-    //let number: Uint<256, 4> = <U256>::abi_decode(&input_number_bytes, true).unwrap();
     let total_exact_amount_of_energy_available = input_total_exact_amount_of_energy_available;
-    //let total_exact_amount_of_energy_available = <U256>::abi_decode(&input_total_exact_amount_of_energy_available_bytes, true).unwrap();
     let current_time = input_current_time;
     let monitored_time = input_monitored_time;
     let monitored_merkle_root = input_monitored_merkle_root;
     //let monitored_hash_path = input_monitored_hash_path;
     let monitored_nullifier = input_monitored_nullifier;
 
-    // Run the computation.
+    // Constraint: Check whether the total exact amount of energy available is greater than the amount of energy to be sold.
     assert!(total_exact_amount_of_energy_available >= amount_of_energy_to_be_sold, "total exact amount of energy available must be greater than the amount of energy to be sold");
-    //assert!(!number.bit(0), "number is not even");
-    //assert!(monitored_time <= current_time, "A given monitored time must be less than the current time");
-    //assert!(&monitored_time >= &current_time - 3600, "A given monitored time must be greater than the current time - 1 hour (3600 seconds)");
 
     // Commit the "journal" that will be received by the application contract.
     // Journal is encoded using Solidity ABI for easy decoding in the app contract.
@@ -75,5 +69,4 @@ fn main() {
     env::commit(&monitored_merkle_root);
     //env::commit(&monitored_hash_path);
     env::commit(&monitored_nullifier);
-    //env::commit_slice(number.abi_encode().as_slice());
 }
