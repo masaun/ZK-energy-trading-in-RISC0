@@ -15,12 +15,12 @@ contract EnergyAggregator {
     ///         It uniquely represents the logic of that guest program,
     ///         ensuring that only proofs generated from a pre-defined guest program
     ///         (in this case, checking if a number is even) are considered valid.
-    bytes32 public constant imageId = ImageID.IS_SMART_METER_ID;
+    bytes32 public constant imageId = ImageID.SMART_METER_ID;
 
     uint256 public sellOrderId;
     mapping(uint256 => DataTypes.SellOrder) public sellOrders; /// @dev - sellOrderId -> SellOrder struct
-    mapping(uint256 => uint256) public energyAmountToBeSolds; /// @dev - sellOrderId -> energyAmountToBeSold / This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
-    mapping(uint256 => address) public energySellers;         /// @dev - sellOrderId -> energySeller address
+    mapping(uint256 => uint256) public energyAmountToBeSolds;  /// @dev - sellOrderId -> energyAmountToBeSold / This is the energy amount that a Producer want to sell (NOTE: This is "not" all amount of energy available in the Producer, which is measured by the Producer's smart meter).
+    mapping(uint256 => address) public energySellers;          /// @dev - sellOrderId -> energySeller address
 
     mapping(bytes => mapping(bytes32 => bool)) public monitoredNullifiers; /// @dev - To prevent from a proof double-spending attack.
 
@@ -56,15 +56,12 @@ contract EnergyAggregator {
             monitoredTime: _monitoredTime,
             monitoredMerkleRoot: _monitoredMerkleRoot,
             monitoredNullifier: _monitoredNullifier,
+            orderMatched: false,
             seal: seal,
             imageId: imageId,
             journal: sha256(journal)
         });
         sellOrders[sellOrderId] = sellOrder;
-        
-        /// @dev - This may be able to be removed:
-        //energyAmountToBeSolds[sellOrderId] = _energyAmountToBeSold;
-        //energySellers[sellOrderId] = msg.sender;
 
         /// @dev - To prevent from a proof double-spending attack.
         require(monitoredNullifiers[seal][_monitoredNullifier] == false, "The proof has already been used");
@@ -75,17 +72,6 @@ contract EnergyAggregator {
     function getSellOrder(uint256 sellOrderId) public view returns (DataTypes.SellOrder memory _sellOrder) {
         return sellOrders[sellOrderId];
     }  
-
-
-    /// @notice - 
-    // function getEnergyAmountToBeSold(uint256 sellOrderId) public view returns (uint256) {
-    //     return energyAmountToBeSolds[sellOrderId];
-    // }
-
-    /// @notice -
-    // function getEnergySeller(uint256 sellOrderId) public view returns (address) {
-    //     return energySellers[sellOrderId];
-    // }
 
     /// @notice - Create an energy buy order /w the energy amount that the buyer want to buy.
     function createBuyOrderOfEnergy(uint256 energyAmountToBeBought) public {
@@ -101,6 +87,10 @@ contract EnergyAggregator {
             if (getSellOrder(i).energyAmountToBeSold == energyAmountToBeBought) {
                 address energySeller = getSellOrder(i).energySeller;
                 // [TODO]: Matched -> Execute the transaction (i.e. Pay a seller-matched for buying the energy amount).
+                DataTypes.SellOrder storage sellOrder = sellOrders[i];
+                require(sellOrder.orderMatched == false, "The order has already been matched");
+                sellOrder.orderMatched = true;
+
                 // [TODO]: Ideally, a Seller's "Asking SellingPrice" is also needed.
             }
         }

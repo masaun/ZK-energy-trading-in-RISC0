@@ -44,7 +44,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         //uint256 monitored_hash_path,
         bytes32 monitoredNullifier = 0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8;
 
-        RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
+        RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
 
         energyAggregator.createSellOrder(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier, receipt.seal);
         assertEq(energyAggregator.getSellOrder(1).energyAmountToBeSold, energyAmountToBeSold);
@@ -72,7 +72,7 @@ contract EnergyAggregatorTest is RiscZeroCheats, Test {
         bytes32 monitoredNullifier = 0x1efa9d6bb4dfdf86063cc77efdec90eb9262079230f1898049efad264835b6c8;
 
         /// @dev - Generate (= Prove) a new mock proof.
-        RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.IS_SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
+        RiscZeroReceipt memory receipt = verifier.mockProve(ImageID.SMART_METER_ID, sha256(abi.encode(energyAmountToBeSold, monitoredTime, monitoredMerkleRoot, monitoredNullifier)));
         //console2.log("Receipt ID:", receipt.id);
         console2.logBytes(receipt.seal); // [Log]: 0x000000002cfcebe8cc0eeb0dbd0d347d08fb5ee468cd9747c1920d0cb81222b1e8576962
 
