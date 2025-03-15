@@ -40,17 +40,16 @@ fn main() {
     //let input_monitored_hash_path: Vec<String> = Vec::<String>::new();
     let input_monitored_nullifier: String = env::read();
 
-    // // Calculate the monitored_nullifier from the input data and store it into the variable.
-    // let mut hasher = Sha256::new();
-    // hasher.update(args.amount_of_energy_to_be_sold.clone());
-    // hasher.update(args.monitored_time.clone());
-    // hasher.update(args.monitored_merkle_root.clone());
-    // let hash = hasher.finalize(); // Note that calling `finalize()` consumes hasher
-    // let nullifier: String = hex::encode(hash); // Convert GenericArray<u8, N> to a hexadecimal string
-    // tracing::info!("nullifier (which is calculated in the guest program): {}\n", nullifier);
+    // Calculate the monitored_nullifier from the input data and store it into the variable.
+    let mut hasher = Sha256::new();
+    hasher.update(input_amount_of_energy_to_be_sold.to_string().as_bytes());
+    hasher.update(input_monitored_time.to_string().as_bytes());
+    hasher.update(input_monitored_merkle_root.as_bytes());
+    let hash = hasher.finalize(); // Note that calling `finalize()` consumes hasher
+    let nullifier: String = hex::encode(hash); // Convert GenericArray<u8, N> to a hexadecimal string
 
-    // // Constraint: Check the input data of the monitored_nullifier.
-    // assert!(input_monitored_nullifier == nullifier, "The input_monitored_nullifier is not correct.");
+    // Constraint: Check the input data of the monitored_nullifier.
+    assert!(input_monitored_nullifier == nullifier, "The input_monitored_nullifier is not correct.");
 
     // Decode and parse the input
     let amount_of_energy_to_be_sold = input_amount_of_energy_to_be_sold;
