@@ -2,7 +2,7 @@
 
 ## Tech stack
 
-- ZK guest program (`ZK circuit`): Written in [`zkVM / Boundless`](https://beboundless.xyz/) powered by [RISC Zero](https://risczero.com/)
+- ZK program (`ZK circuit`): Implemented in [`zkVM / Boundless`](https://beboundless.xyz/) powered by [RISC Zero](https://risczero.com/) (Written in Rust)
 - Smart Contract: Written in Solidity (Framework: Foundry)
 - Blockchain: [`Ethereum Sepolia`](https://sepolia.etherscan.io/) (Testnet)
 
@@ -20,12 +20,12 @@ This project would assume the `M2M` (`machine-to-machine`) interaction by follow
 
 ## Overview
 
-- This is the ZK (Zero-Knowledge) based Energy Trading Platform in `zkVM / Boundless` powered by `RISC Zero`, which is the decentralized energy trading platform that consists of the ZK programs (ZK circuits) and the smart contracts.
+- This is the `ZK` (`Zero-Knowledge`) based Energy Trading Platform, which is the decentralized energy trading platform that consists of the ZK programs in [`zkVM / Boundless`](https://beboundless.xyz/) powered by [RISC Zero](https://risczero.com/) and smart contracts in Solidity/Foundry.
 
 - By trading energy through this platform, each actor would get the following merits: 
   - an energy producer ('s smart meter) can create a sell order of a specified-amount of energy **without revealing** a **`whole` amount of energy-produced**.
 
-  - meanwhile, an energy consumer ('s smart meter) can buy create a buy order of a desired-amount of energy, which is validated and a `proof` is attested via a ZK circuit.
+  - meanwhile, an energy consumer ('s smart meter) can buy create a buy order of a desired-amount of energy, which is validated and a `proof` is attested via a ZK program (ZK circuit).
 
 <br>
 
