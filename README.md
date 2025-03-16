@@ -9,8 +9,11 @@
 <br>
 
 ## Actors
-- Energy Producer's (Energy Seller's) smart meter
-- Energy Consumer's (Energy Buyer's) smart meter
+
+This project would assume the `M2M` (`machine-to-machine`) interaction by following actors:
+
+- Energy Producer's (Energy Seller's) smart meter, which has a wallet.
+- Energy Consumer's (Energy Buyer's) smart meter, which has a wallet.
 - Energy Aggregator smart contract
 
 <br>
