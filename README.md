@@ -26,7 +26,12 @@
 
 <br>
 
-## User flow
+## Userflow - Diagram
+- The diagram of the userflow: https://github.com/masaun/ZK-energy-trading-platform-in-RISC0/blob/main/docs/diagrams/diagram_userflow_ZK-energy-trading-platform-in-RISC0.jpg
+
+<br>
+
+## Userflow - Details
 
 - 1/ A energy producer's smart meter would measure a whole amount of energy avaialble.
 
@@ -50,11 +55,6 @@
   - In this scenario, an energy **price** would be set as a `fixed-price` (`0.00000001 ETH / kWh`). In the future, a seller and a buyer should be able to specify a dynamic price (desired-price).
 
   - In the step 2/ above, the remained-amount of energy goes to a home battery stroage like [Tesla's Powerwall](https://www.tesla.com/powerwall)
-
-<br>
-
-## Userflow - Diagram
-- The diagram of the userflow: https://github.com/masaun/ZK-energy-trading-platform-in-RISC0/blob/develop/docs/diagrams/diagram_userflow_ZK-energy-trading-platform-in-RISC0.jpg
 
 <br>
 
