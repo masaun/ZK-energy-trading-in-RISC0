@@ -26,7 +26,12 @@
 
 <br>
 
-## User flow
+## Userflow - Diagram
+- The diagram of the userflow: https://github.com/masaun/ZK-energy-trading-platform-in-RISC0/blob/main/docs/diagrams/diagram_userflow_ZK-energy-trading-platform-in-RISC0.jpg
+
+<br>
+
+## Userflow - Details
 
 - 1/ A energy producer's smart meter would measure a whole amount of energy avaialble.
 
@@ -35,7 +40,7 @@
     - During the process of generating (proving) a proof in a ZK program, it would be validated whether or not the amount of energy-created with a sell order is equal to or less than the whole amount of energy-measured by the producer's smart meter. (This is called a "constraint")
     - Once the validation (constraint) would be passed in the ZK program, a proof wold be generated and a energy producer will receive it off-chain.
 
-  - 2-2/ Then, the energy producer would call the EnergyAggregator#`createSellOrder()` with a proof and public inputs as the arguments.
+  - 2-2/ Then, the energy producer would call the EnergyAggregator#`createSellOrder()` with a proof and public inputs (icl. `amount of energy to be sold`) as the arguments.
 
 - 3/ A energy consumer would deposit certain amount of native ETH into the EnergyAggregator contract via the EnergyAggregator#`depositNativeETH()`
   - By doing so, the amount of native ETH to be send would be added to the buyer's account in the EnergyAggregator contract (`buyerBalances[buyer's address]`).
@@ -50,7 +55,6 @@
   - In this scenario, an energy **price** would be set as a `fixed-price` (`0.00000001 ETH / kWh`). In the future, a seller and a buyer should be able to specify a dynamic price (desired-price).
 
   - In the step 2/ above, the remained-amount of energy goes to a home battery stroage like [Tesla's Powerwall](https://www.tesla.com/powerwall)
-
 
 <br>
 

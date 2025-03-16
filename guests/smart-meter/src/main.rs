@@ -22,13 +22,6 @@ use risc0_zkvm::guest::env;
 use hex;
 use sha2::{digest::generic_array::GenericArray, Digest, Sha256};
 
-#[derive(Debug)]
-struct ElectricityBillData {
-    seller_id: u32,
-    seller_physical_address: String,
-    seller_wallet_addresses: String,
-}
-
 fn main() {
     // Read the input data for this application (= Host).
     let input_amount_of_energy_to_be_sold: u64 = env::read();
